@@ -39,6 +39,8 @@ export default class KanbanView {
         cardNode.querySelector(".card-assignee").textContent = `Assegnato a: ${card.assegnatario}`;
 
         cardElement.dataset.cardId = card.id;
+        cardElement.dataset.listId = lista.id;
+        cardElement.draggable = true;
         cardsContainer.appendChild(cardNode);
       });
 

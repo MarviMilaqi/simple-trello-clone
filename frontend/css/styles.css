@@ -124,6 +124,12 @@ body {
   gap: 10px;
 }
 
+.kanban-card.is-dragging {
+  opacity: 0.5;
+  border-style: dashed;
+  background: #eef2ff;
+}
+
 .card-title {
   font-size: 1rem;
   margin-bottom: 4px;
@@ -152,6 +158,13 @@ body {
   display: flex;
   justify-content: space-between;
   gap: 8px;
+}
+
+.cards.drop-target {
+  border: 2px dashed #93c5fd;
+  border-radius: 12px;
+  padding: 10px;
+  background: #eff6ff;
 }
 
 .ghost-button {
