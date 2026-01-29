@@ -15,6 +15,32 @@ export default class KanbanModel {
     return this.board ? { ...this.board } : null;
   }
 
+  // Recupera una lista per id
+  getListById(listId) {
+    if (!this.board) {
+      return null;
+    }
+
+    return this.board.liste.find((lista) => String(lista.id) === String(listId)) ?? null;
+  }
+
+  // Recupera una card per id
+  getCardById(cardId) {
+    if (!this.board) {
+      return null;
+    }
+
+    for (const lista of this.board.liste) {
+      const cards = Array.isArray(lista.card) ? lista.card : [];
+      const card = cards.find((item) => String(item.id) === String(cardId));
+      if (card) {
+        return card;
+      }
+    }
+
+    return null;
+  }
+
   // Sposta una card tra liste o all'interno della stessa lista
   moveCard(cardId, sourceListId, targetListId, targetIndex) {
     if (!this.board) {

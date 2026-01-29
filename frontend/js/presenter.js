@@ -4,6 +4,7 @@ export default class KanbanPresenter {
     this.model = model;
     this.view = view;
     this.apiClient = apiClient;
+    this.currentBoardId = null;
     this.dragState = {
       cardId: null,
       sourceListId: null,
@@ -24,12 +25,25 @@ export default class KanbanPresenter {
       const board = boards[0] ?? null;
 
       if (!board) {
+        this.currentBoardId = null;
         this.model.setBoard({ titolo: "Nessuna board", descrizione: "Crea una nuova board per iniziare.", liste: [] });
         this.view.renderBoard(this.model.getBoard());
         return;
       }
 
-      const lists = await this.apiClient.getLists(board.id);
+      await this.loadBoard(board.id);
+    } catch (error) {
+      this.currentBoardId = null;
+      this.model.setBoard({ titolo: "Errore", descrizione: error.message, liste: [] });
+      this.view.renderBoard(this.model.getBoard());
+    }
+  }
+
+  // Carica una board specifica e i suoi contenuti
+  async loadBoard(boardId) {
+    try {
+      const board = await this.apiClient.getBoard(boardId);
+      const lists = await this.apiClient.getLists(boardId);
       const listsWithCards = await Promise.all(
         lists.map(async (lista) => ({
           ...lista,
@@ -37,39 +51,184 @@ export default class KanbanPresenter {
         }))
       );
 
+      this.currentBoardId = board.id;
       this.model.setBoard({
         ...board,
         liste: listsWithCards,
       });
-
       this.view.renderBoard(this.model.getBoard());
     } catch (error) {
+      this.currentBoardId = null;
       this.model.setBoard({ titolo: "Errore", descrizione: error.message, liste: [] });
       this.view.renderBoard(this.model.getBoard());
     }
   }
 
-  // Collega gli eventi UI (placeholder per la fase di integrazione API)
+  // Collega gli eventi UI alle API
   bindActions() {
     const createBoardButton = document.getElementById("create-board");
+    const createListButton = document.getElementById("create-list");
 
-    createBoardButton.addEventListener("click", () => {
-      // Azione dimostrativa: in seguito verrà collegata alla API CRUD
-      window.alert("Funzione in arrivo: creazione nuova board.");
+    createBoardButton.addEventListener("click", async () => {
+      const title = window.prompt("Titolo della nuova board:");
+      if (!title || !title.trim()) {
+        return;
+      }
+
+      const description = window.prompt("Descrizione della board (opzionale):") ?? "";
+
+      try {
+        const created = await this.apiClient.createBoard({
+          titolo: title.trim(),
+          descrizione: description.trim() || null,
+        });
+        await this.loadBoard(created.id);
+      } catch (error) {
+        window.alert(`Errore: ${error.message}`);
+      }
     });
 
-    this.view.listsArea.addEventListener("click", (event) => {
+    createListButton.addEventListener("click", async () => {
+      if (!this.currentBoardId) {
+        window.alert("Crea prima una board.");
+        return;
+      }
+
+      const title = window.prompt("Titolo della lista:");
+      if (!title || !title.trim()) {
+        return;
+      }
+
+      const board = this.model.getBoard();
+      const posizione = board?.liste?.length ?? 0;
+
+      try {
+        await this.apiClient.createList({
+          board_id: this.currentBoardId,
+          titolo: title.trim(),
+          posizione,
+        });
+        await this.loadBoard(this.currentBoardId);
+      } catch (error) {
+        window.alert(`Errore: ${error.message}`);
+      }
+    });
+
+    this.view.listsArea.addEventListener("click", async (event) => {
       const listButton = event.target.closest(".list-action");
       const cardButton = event.target.closest(".card-action");
 
       if (listButton) {
         const action = listButton.dataset.action;
-        window.alert(`Azione '${action}' in arrivo.`);
+        const listElement = listButton.closest(".kanban-list");
+        const listId = listElement?.dataset?.listId;
+
+        if (!listId) {
+          return;
+        }
+
+        if (action === "add-card") {
+          const title = window.prompt("Titolo della card:");
+          if (!title || !title.trim()) {
+            return;
+          }
+
+          const description = window.prompt("Descrizione (opzionale):") ?? "";
+          const list = this.model.getListById(listId);
+          const posizione = list?.card?.length ?? 0;
+
+          try {
+            await this.apiClient.createCard({
+              list_id: listId,
+              titolo: title.trim(),
+              descrizione: description.trim() || null,
+              posizione,
+            });
+            await this.loadBoard(this.currentBoardId);
+          } catch (error) {
+            window.alert(`Errore: ${error.message}`);
+          }
+        }
+
+        if (action === "rename-list") {
+          const list = this.model.getListById(listId);
+          const title = window.prompt("Nuovo nome lista:", list?.titolo ?? "");
+          if (!title || !title.trim()) {
+            return;
+          }
+
+          try {
+            await this.apiClient.updateList(listId, {
+              titolo: title.trim(),
+              posizione: list?.posizione ?? 0,
+            });
+            await this.loadBoard(this.currentBoardId);
+          } catch (error) {
+            window.alert(`Errore: ${error.message}`);
+          }
+        }
+
+        if (action === "remove-list") {
+          const confirmDelete = window.confirm("Vuoi eliminare questa lista?");
+          if (!confirmDelete) {
+            return;
+          }
+
+          try {
+            await this.apiClient.deleteList(listId);
+            await this.loadBoard(this.currentBoardId);
+          } catch (error) {
+            window.alert(`Errore: ${error.message}`);
+          }
+        }
       }
 
       if (cardButton) {
         const action = cardButton.dataset.action;
-        window.alert(`Azione '${action}' in arrivo.`);
+        const cardElement = cardButton.closest(".kanban-card");
+        const listElement = cardButton.closest(".kanban-list");
+        const cardId = cardElement?.dataset?.cardId;
+        const listId = listElement?.dataset?.listId;
+
+        if (!cardId || !listId) {
+          return;
+        }
+
+        if (action === "edit-card") {
+          const card = this.model.getCardById(cardId);
+          const newTitle = window.prompt("Titolo della card:", card?.titolo ?? "");
+          if (!newTitle || !newTitle.trim()) {
+            return;
+          }
+
+          const newDescription = window.prompt("Descrizione:", card?.descrizione ?? "") ?? "";
+
+          try {
+            await this.apiClient.updateCard(cardId, {
+              titolo: newTitle.trim(),
+              descrizione: newDescription.trim() || null,
+              list_id: listId,
+              posizione: card?.posizione ?? 0,
+            });
+            await this.loadBoard(this.currentBoardId);
+          } catch (error) {
+            window.alert(`Errore: ${error.message}`);
+          }
+        }
+
+        if (action === "delete-card") {
+          const confirmDelete = window.confirm("Vuoi eliminare questa card?");
+          if (!confirmDelete) {
+            return;
+          }
+
+          try {
+            await this.apiClient.deleteCard(cardId);
+            await this.loadBoard(this.currentBoardId);
+          } catch (error) {
+            window.alert(`Errore: ${error.message}`);
+          }
+        }
       }
     });
   }
@@ -128,7 +287,7 @@ export default class KanbanPresenter {
       }
     });
 
-    listsArea.addEventListener("drop", (event) => {
+    listsArea.addEventListener("drop", async (event) => {
       event.preventDefault();
 
       const container = event.target.closest(".cards");
@@ -146,6 +305,29 @@ export default class KanbanPresenter {
       this.model.moveCard(this.dragState.cardId, sourceListId, targetListId, targetIndex);
       this.view.renderBoard(this.model.getBoard());
       this.clearDropHighlights();
+
+      try {
+        const sourceList = this.model.getListById(sourceListId);
+        const targetListModel = this.model.getListById(targetListId);
+        const listsToUpdate = new Map();
+
+        if (sourceList) {
+          listsToUpdate.set(sourceList.id, sourceList);
+        }
+
+        if (targetListModel) {
+          listsToUpdate.set(targetListModel.id, targetListModel);
+        }
+
+        await Promise.all(
+          Array.from(listsToUpdate.values()).map((list) => this.persistCardPositions(list))
+        );
+      } catch (error) {
+        window.alert(`Errore: ${error.message}`);
+        if (this.currentBoardId) {
+          await this.loadBoard(this.currentBoardId);
+        }
+      }
     });
   }
 
@@ -171,5 +353,24 @@ export default class KanbanPresenter {
     this.view.listsArea.querySelectorAll(".drop-target").forEach((element) => {
       element.classList.remove("drop-target");
     });
+  }
+
+  // Aggiorna le posizioni delle card per una lista
+  async persistCardPositions(list) {
+    if (!list) {
+      return;
+    }
+
+    const cards = Array.isArray(list.card) ? list.card : [];
+    await Promise.all(
+      cards.map((card, index) =>
+        this.apiClient.updateCard(card.id, {
+          titolo: card.titolo,
+          descrizione: card.descrizione ?? null,
+          list_id: list.id,
+          posizione: index,
+        })
+      )
+    );
   }
 }

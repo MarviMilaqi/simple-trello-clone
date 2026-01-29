@@ -66,6 +66,13 @@ body {
   box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
 }
 
+.board-meta-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
 .board-meta h2 {
   font-size: 1.25rem;
   margin-bottom: 6px;

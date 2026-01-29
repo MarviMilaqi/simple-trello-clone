@@ -16,7 +16,7 @@ export default class KanbanView {
     }
 
     this.boardTitle.textContent = `Board: ${board.titolo}`;
-    this.boardDescription.textContent = board.descrizione;
+    this.boardDescription.textContent = board.descrizione ?? "";
 
     // Pulisce l'area liste prima di ridisegnare
     this.listsArea.innerHTML = "";
@@ -36,7 +36,8 @@ export default class KanbanView {
 
         cardNode.querySelector(".card-title").textContent = card.titolo;
         cardNode.querySelector(".card-description").textContent = card.descrizione;
-        cardNode.querySelector(".card-assignee").textContent = `Assegnato a: ${card.assegnatario}`;
+        const assignee = card.assegnatario ?? "Non assegnato";
+        cardNode.querySelector(".card-assignee").textContent = `Assegnato a: ${assignee}`;
 
         cardElement.dataset.cardId = card.id;
         cardElement.dataset.listId = lista.id;
