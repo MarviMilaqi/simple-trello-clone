@@ -13,7 +13,10 @@
       <h1>Clone di Trello (Semplificato)</h1>
       <p class="subtitle">Bacheca Kanban collaborativa per progetti di gruppo</p>
     </div>
-    <button id="create-board" class="primary-button">Crea nuova board</button>
+    <div class="header-actions">
+      <button id="open-boards" class="ghost-button">Boards</button>
+      <button id="create-board" class="primary-button">Crea nuova board</button>
+    </div>
   </header>
 
   <main class="app-shell">
@@ -21,7 +24,7 @@
     <section class="board-meta">
       <div class="board-meta-header">
         <div>
-          <h2 id="board-title">Board: Progetto Demo</h2>
+          <h2 id="board-title">Progetto Demo</h2>
           <p id="board-description">Organizza le attività del team con liste e card.</p>
         </div>
         <button id="create-list" class="ghost-button">+ Lista</button>
@@ -63,6 +66,21 @@
       </div>
     </li>
   </template>
+
+  <div id="modal-overlay" class="modal-overlay is-hidden" aria-hidden="true">
+    <div class="modal">
+      <header class="modal-header">
+        <h3 id="modal-title"></h3>
+      </header>
+      <form id="modal-form" class="modal-form">
+        <div id="modal-fields"></div>
+        <div class="modal-actions">
+          <button type="button" id="modal-cancel" class="ghost-button">Annulla</button>
+          <button type="submit" id="modal-confirm" class="primary-button">Conferma</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <script type="module" src="js/app.js"></script>
 </body>

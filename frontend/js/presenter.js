@@ -5,6 +5,7 @@ export default class KanbanPresenter {
     this.view = view;
     this.apiClient = apiClient;
     this.currentBoardId = null;
+    this.boardsCache = [];
     this.dragState = {
       cardId: null,
       sourceListId: null,
@@ -22,6 +23,7 @@ export default class KanbanPresenter {
   async loadInitialBoard() {
     try {
       const boards = await this.apiClient.getBoards();
+      this.boardsCache = boards;
       const board = boards[0] ?? null;
 
       if (!board) {
@@ -42,6 +44,7 @@ export default class KanbanPresenter {
   // Carica una board specifica e i suoi contenuti
   async loadBoard(boardId) {
     try {
+      this.boardsCache = await this.apiClient.getBoards();
       const board = await this.apiClient.getBoard(boardId);
       const lists = await this.apiClient.getLists(boardId);
       const listsWithCards = await Promise.all(
@@ -68,21 +71,44 @@ export default class KanbanPresenter {
   bindActions() {
     const createBoardButton = document.getElementById("create-board");
     const createListButton = document.getElementById("create-list");
+    const openBoardsButton = document.getElementById("open-boards");
 
     createBoardButton.addEventListener("click", async () => {
-      const title = window.prompt("Titolo della nuova board:");
-      if (!title || !title.trim()) {
+      const formValues = await this.view.showFormModal({
+        title: "Crea nuova board",
+        confirmText: "Crea",
+        fields: [
+          { name: "titolo", label: "Titolo", placeholder: "Titolo board" },
+          { name: "descrizione", label: "Descrizione", type: "textarea", placeholder: "Descrizione (opzionale)" },
+        ],
+      });
+
+      if (!formValues || !formValues.titolo) {
         return;
       }
 
-      const description = window.prompt("Descrizione della board (opzionale):") ?? "";
-
       try {
         const created = await this.apiClient.createBoard({
-          titolo: title.trim(),
-          descrizione: description.trim() || null,
+          titolo: formValues.titolo.trim(),
+          descrizione: formValues.descrizione?.trim() || null,
         });
         await this.loadBoard(created.id);
+      } catch (error) {
+        window.alert(`Errore: ${error.message}`);
+      }
+    });
+
+    openBoardsButton.addEventListener("click", async () => {
+      try {
+        const boards = await this.apiClient.getBoards();
+        this.boardsCache = boards;
+        const selectedId = await this.view.showBoardsModal({
+          boards,
+          currentBoardId: this.currentBoardId,
+        });
+        if (selectedId) {
+          await this.loadBoard(selectedId);
+        }
       } catch (error) {
         window.alert(`Errore: ${error.message}`);
       }
@@ -94,8 +120,15 @@ export default class KanbanPresenter {
         return;
       }
 
-      const title = window.prompt("Titolo della lista:");
-      if (!title || !title.trim()) {
+      const formValues = await this.view.showFormModal({
+        title: "Nuova lista",
+        confirmText: "Crea",
+        fields: [
+          { name: "titolo", label: "Titolo", placeholder: "Nome lista" },
+        ],
+      });
+
+      if (!formValues || !formValues.titolo) {
         return;
       }
 
@@ -105,7 +138,7 @@ export default class KanbanPresenter {
       try {
         await this.apiClient.createList({
           board_id: this.currentBoardId,
-          titolo: title.trim(),
+          titolo: formValues.titolo.trim(),
           posizione,
         });
         await this.loadBoard(this.currentBoardId);
@@ -128,20 +161,27 @@ export default class KanbanPresenter {
         }
 
         if (action === "add-card") {
-          const title = window.prompt("Titolo della card:");
-          if (!title || !title.trim()) {
+          const formValues = await this.view.showFormModal({
+            title: "Nuova card",
+            confirmText: "Crea",
+            fields: [
+              { name: "titolo", label: "Titolo", placeholder: "Titolo card" },
+              { name: "descrizione", label: "Descrizione", type: "textarea", placeholder: "Descrizione (opzionale)" },
+            ],
+          });
+
+          if (!formValues || !formValues.titolo) {
             return;
           }
 
-          const description = window.prompt("Descrizione (opzionale):") ?? "";
           const list = this.model.getListById(listId);
           const posizione = list?.card?.length ?? 0;
 
           try {
             await this.apiClient.createCard({
               list_id: listId,
-              titolo: title.trim(),
-              descrizione: description.trim() || null,
+              titolo: formValues.titolo.trim(),
+              descrizione: formValues.descrizione?.trim() || null,
               posizione,
             });
             await this.loadBoard(this.currentBoardId);
@@ -152,14 +192,21 @@ export default class KanbanPresenter {
 
         if (action === "rename-list") {
           const list = this.model.getListById(listId);
-          const title = window.prompt("Nuovo nome lista:", list?.titolo ?? "");
-          if (!title || !title.trim()) {
+          const formValues = await this.view.showFormModal({
+            title: "Rinomina lista",
+            confirmText: "Salva",
+            fields: [
+              { name: "titolo", label: "Titolo", placeholder: "Nome lista", value: list?.titolo ?? "" },
+            ],
+          });
+
+          if (!formValues || !formValues.titolo) {
             return;
           }
 
           try {
             await this.apiClient.updateList(listId, {
-              titolo: title.trim(),
+              titolo: formValues.titolo.trim(),
               posizione: list?.posizione ?? 0,
             });
             await this.loadBoard(this.currentBoardId);
@@ -169,7 +216,11 @@ export default class KanbanPresenter {
         }
 
         if (action === "remove-list") {
-          const confirmDelete = window.confirm("Vuoi eliminare questa lista?");
+          const confirmDelete = await this.view.showConfirmModal({
+            title: "Elimina lista",
+            message: "Vuoi eliminare questa lista?",
+            confirmText: "Elimina",
+          });
           if (!confirmDelete) {
             return;
           }
@@ -196,17 +247,23 @@ export default class KanbanPresenter {
 
         if (action === "edit-card") {
           const card = this.model.getCardById(cardId);
-          const newTitle = window.prompt("Titolo della card:", card?.titolo ?? "");
-          if (!newTitle || !newTitle.trim()) {
+          const formValues = await this.view.showFormModal({
+            title: "Modifica card",
+            confirmText: "Salva",
+            fields: [
+              { name: "titolo", label: "Titolo", placeholder: "Titolo card", value: card?.titolo ?? "" },
+              { name: "descrizione", label: "Descrizione", type: "textarea", value: card?.descrizione ?? "" },
+            ],
+          });
+
+          if (!formValues || !formValues.titolo) {
             return;
           }
 
-          const newDescription = window.prompt("Descrizione:", card?.descrizione ?? "") ?? "";
-
           try {
             await this.apiClient.updateCard(cardId, {
-              titolo: newTitle.trim(),
-              descrizione: newDescription.trim() || null,
+              titolo: formValues.titolo.trim(),
+              descrizione: formValues.descrizione?.trim() || null,
               list_id: listId,
               posizione: card?.posizione ?? 0,
             });
@@ -217,7 +274,11 @@ export default class KanbanPresenter {
         }
 
         if (action === "delete-card") {
-          const confirmDelete = window.confirm("Vuoi eliminare questa card?");
+          const confirmDelete = await this.view.showConfirmModal({
+            title: "Elimina card",
+            message: "Vuoi eliminare questa card?",
+            confirmText: "Elimina",
+          });
           if (!confirmDelete) {
             return;
           }

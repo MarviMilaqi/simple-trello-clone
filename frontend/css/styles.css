@@ -27,6 +27,12 @@ body {
   gap: 16px;
 }
 
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
 .app-header h1 {
   font-size: 1.5rem;
   margin-bottom: 4px;
@@ -79,9 +85,11 @@ body {
 }
 
 .lists-area {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  display: flex;
   gap: 20px;
+  align-items: flex-start;
+  overflow-x: auto;
+  padding-bottom: 12px;
 }
 
 .list-placeholder {
@@ -100,6 +108,7 @@ body {
   flex-direction: column;
   gap: 12px;
   box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+  flex: 0 0 280px;
 }
 
 .list-header {
@@ -187,6 +196,92 @@ body {
 .ghost-button:hover {
   border-color: #cbd5f5;
   color: #1d4ed8;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 50;
+}
+
+.modal-overlay.is-hidden {
+  display: none;
+}
+
+.modal {
+  background: #ffffff;
+  border-radius: 16px;
+  max-width: 520px;
+  width: 100%;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.2);
+  padding: 20px 24px;
+}
+
+.modal-header h3 {
+  font-size: 1.2rem;
+  margin-bottom: 12px;
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.modal-field label {
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+.modal-field input,
+.modal-field textarea {
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  font-family: inherit;
+}
+
+.modal-field textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.modal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modal-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.modal-list-title {
+  font-weight: 600;
 }
 
 @media (max-width: 720px) {
