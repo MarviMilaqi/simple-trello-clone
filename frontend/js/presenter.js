@@ -1,15 +1,47 @@
 // Presenter: coordina le azioni tra Model e View
 export default class KanbanPresenter {
-  constructor(model, view) {
+  constructor(model, view, apiClient) {
     this.model = model;
     this.view = view;
+    this.apiClient = apiClient;
   }
 
   // Inizializza la UI con i dati del Model
-  init() {
-    const board = this.model.getBoard();
-    this.view.renderBoard(board);
+  async init() {
+    await this.loadInitialBoard();
     this.bindActions();
+  }
+
+  // Carica la prima board disponibile tramite API
+  async loadInitialBoard() {
+    try {
+      const boards = await this.apiClient.getBoards();
+      const board = boards[0] ?? null;
+
+      if (!board) {
+        this.model.setBoard({ titolo: "Nessuna board", descrizione: "Crea una nuova board per iniziare.", liste: [] });
+        this.view.renderBoard(this.model.getBoard());
+        return;
+      }
+
+      const lists = await this.apiClient.getLists(board.id);
+      const listsWithCards = await Promise.all(
+        lists.map(async (lista) => ({
+          ...lista,
+          card: await this.apiClient.getCards(lista.id),
+        }))
+      );
+
+      this.model.setBoard({
+        ...board,
+        liste: listsWithCards,
+      });
+
+      this.view.renderBoard(this.model.getBoard());
+    } catch (error) {
+      this.model.setBoard({ titolo: "Errore", descrizione: error.message, liste: [] });
+      this.view.renderBoard(this.model.getBoard());
+    }
   }
 
   // Collega gli eventi UI (placeholder per la fase di integrazione API)

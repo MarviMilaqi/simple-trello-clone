@@ -10,6 +10,11 @@ export default class KanbanView {
 
   // Renderizza i dati della board nella pagina
   renderBoard(board) {
+    if (!board) {
+      this.listsArea.innerHTML = "<div class=\"list-placeholder\">Nessuna board caricata.</div>";
+      return;
+    }
+
     this.boardTitle.textContent = `Board: ${board.titolo}`;
     this.boardDescription.textContent = board.descrizione;
 
@@ -39,5 +44,9 @@ export default class KanbanView {
 
       this.listsArea.appendChild(listNode);
     });
+
+    if (board.liste.length === 0) {
+      this.listsArea.innerHTML = "<div class=\"list-placeholder\">Nessuna lista disponibile.</div>";
+    }
   }
 }
