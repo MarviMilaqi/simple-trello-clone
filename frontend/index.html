@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clone Trello Semplificato</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <!-- Layout principale della bacheca Kanban -->
+  <header class="app-header">
+    <div>
+      <h1>Clone di Trello (Semplificato)</h1>
+      <p class="subtitle">Bacheca Kanban collaborativa per progetti di gruppo</p>
+    </div>
+    <button id="create-board" class="primary-button">Crea nuova board</button>
+  </header>
+
+  <main class="app-shell">
+    <!-- Sezione informativa della board selezionata -->
+    <section class="board-meta">
+      <h2 id="board-title">Board: Progetto Demo</h2>
+      <p id="board-description">Organizza le attività del team con liste e card.</p>
+    </section>
+
+    <!-- Area liste: verrà popolata dal View tramite il Presenter -->
+    <section class="lists-area" id="lists-area">
+      <div class="list-placeholder">Caricamento liste...</div>
+    </section>
+  </main>
+
+  <template id="list-template">
+    <article class="kanban-list">
+      <header class="list-header">
+        <h3 class="list-title"></h3>
+        <button class="ghost-button list-action" data-action="add-card">+ Card</button>
+      </header>
+      <ul class="cards"></ul>
+      <footer class="list-footer">
+        <button class="ghost-button list-action" data-action="rename-list">Rinomina</button>
+        <button class="ghost-button list-action" data-action="remove-list">Elimina</button>
+      </footer>
+    </article>
+  </template>
+
+  <template id="card-template">
+    <li class="kanban-card">
+      <div class="card-body">
+        <h4 class="card-title"></h4>
+        <p class="card-description"></p>
+      </div>
+      <div class="card-meta">
+        <span class="card-assignee"></span>
+        <div class="card-actions">
+          <button class="ghost-button card-action" data-action="edit-card">Modifica</button>
+          <button class="ghost-button card-action" data-action="delete-card">Elimina</button>
+        </div>
+      </div>
+    </li>
+  </template>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
