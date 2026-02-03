@@ -138,22 +138,22 @@ body {
 }
 
 .add-list {
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(203, 213, 225, 0.9);
+  background: transparent;
+  border: none;
   justify-content: center;
   min-height: 96px;
   padding: 12px;
 }
 
 .add-list-toggle {
-  border: none;
+  border: 1px solid #93c5fd;
   background: transparent;
-  color: #1f2937;
+  color: #1e3a8a;
   font-weight: 600;
   text-align: left;
   cursor: pointer;
-  padding: 10px 0;
-  border-radius: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
 }
 
 .add-list-form {
