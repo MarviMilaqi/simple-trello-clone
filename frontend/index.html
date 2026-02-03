@@ -14,6 +14,13 @@
       <p class="subtitle">Bacheca Kanban collaborativa per progetti di gruppo</p>
     </div>
     <div class="header-actions">
+      <div class="board-menu">
+        <button id="board-menu-toggle" class="icon-button" aria-haspopup="true" aria-expanded="false">⋯</button>
+        <div id="board-menu" class="board-menu-panel">
+          <button type="button" class="board-menu-item" data-action="rename-board">Modifica titolo</button>
+          <button type="button" class="board-menu-item danger" data-action="delete-board">Elimina board</button>
+        </div>
+      </div>
       <button id="open-boards" class="secondary-button">Boards</button>
       <button id="create-board" class="primary-button">Crea nuova board</button>
     </div>

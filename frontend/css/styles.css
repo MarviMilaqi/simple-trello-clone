@@ -39,6 +39,64 @@ body {
   align-items: center;
 }
 
+.icon-button {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
+  color: #f9fafb;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.icon-button:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.board-menu {
+  position: relative;
+}
+
+.board-menu-panel {
+  position: absolute;
+  right: 0;
+  top: 44px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.2);
+  display: none;
+  min-width: 180px;
+  z-index: 20;
+}
+
+.board-menu-panel.is-open {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.board-menu-item {
+  border: none;
+  background: transparent;
+  padding: 8px 10px;
+  text-align: left;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #111827;
+  font-weight: 600;
+}
+
+.board-menu-item:hover {
+  background: #f3f4f6;
+}
+
+.board-menu-item.danger {
+  color: #b91c1c;
+}
+
 .app-header h1 {
   font-size: 1.5rem;
   margin-bottom: 4px;
@@ -100,7 +158,7 @@ body {
 }
 
 .board-meta h2 {
-  font-size: 1.4rem;
+  font-size: 1.52rem;
   margin-bottom: 4px;
   color: #f9fafb;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
@@ -149,11 +207,11 @@ body {
 .add-list-toggle {
   border: 1px solid #e5e7eb;
   background: #ffffff;
-  color: #111827;
+  color: #4b5563;
   font-weight: 600;
   text-align: left;
   cursor: pointer;
-  padding: 10px 12px;
+  padding: 12px 12px;
   border-radius: 10px;
 }
 
@@ -182,6 +240,11 @@ body {
   display: flex;
   gap: 10px;
   align-items: center;
+}
+
+.add-list-cancel {
+  background: #ffffff;
+  color: #111827;
 }
 
 .list-header {

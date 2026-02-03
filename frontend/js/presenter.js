@@ -71,6 +71,8 @@ export default class KanbanPresenter {
   bindActions() {
     const createBoardButton = document.getElementById("create-board");
     const openBoardsButton = document.getElementById("open-boards");
+    const boardMenuToggle = document.getElementById("board-menu-toggle");
+    const boardMenuPanel = document.getElementById("board-menu");
 
     createBoardButton.addEventListener("click", async () => {
       const formValues = await this.view.showFormModal({
@@ -110,6 +112,73 @@ export default class KanbanPresenter {
         }
       } catch (error) {
         window.alert(`Errore: ${error.message}`);
+      }
+    });
+
+    boardMenuToggle.addEventListener("click", () => {
+      const isOpen = boardMenuPanel.classList.toggle("is-open");
+      boardMenuToggle.setAttribute("aria-expanded", String(isOpen));
+    });
+
+    document.addEventListener("click", (event) => {
+      if (!event.target.closest(".board-menu")) {
+        boardMenuPanel.classList.remove("is-open");
+        boardMenuToggle.setAttribute("aria-expanded", "false");
+      }
+    });
+
+    boardMenuPanel.addEventListener("click", async (event) => {
+      const actionButton = event.target.closest(".board-menu-item");
+      if (!actionButton || !this.currentBoardId) {
+        return;
+      }
+
+      boardMenuPanel.classList.remove("is-open");
+      boardMenuToggle.setAttribute("aria-expanded", "false");
+      const action = actionButton.dataset.action;
+
+      if (action === "rename-board") {
+        const board = this.model.getBoard();
+        const formValues = await this.view.showFormModal({
+          title: "Modifica titolo board",
+          confirmText: "Salva",
+          fields: [
+            { name: "titolo", label: "Titolo", placeholder: "Titolo board", value: board?.titolo ?? "" },
+            { name: "descrizione", label: "Descrizione", type: "textarea", value: board?.descrizione ?? "" },
+          ],
+        });
+
+        if (!formValues || !formValues.titolo) {
+          return;
+        }
+
+        try {
+          await this.apiClient.updateBoard(this.currentBoardId, {
+            titolo: formValues.titolo.trim(),
+            descrizione: formValues.descrizione?.trim() || null,
+          });
+          await this.loadBoard(this.currentBoardId);
+        } catch (error) {
+          window.alert(`Errore: ${error.message}`);
+        }
+      }
+
+      if (action === "delete-board") {
+        const confirmDelete = await this.view.showConfirmModal({
+          title: "Elimina board",
+          message: "Vuoi eliminare questa board?",
+          confirmText: "Elimina",
+        });
+        if (!confirmDelete) {
+          return;
+        }
+
+        try {
+          await this.apiClient.deleteBoard(this.currentBoardId);
+          await this.loadInitialBoard();
+        } catch (error) {
+          window.alert(`Errore: ${error.message}`);
+        }
       }
     });
 
