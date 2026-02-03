@@ -140,15 +140,16 @@ body {
 .add-list {
   background: transparent;
   border: none;
-  justify-content: center;
-  min-height: 96px;
-  padding: 12px;
+  justify-content: flex-start;
+  min-height: auto;
+  padding: 0;
+  box-shadow: none;
 }
 
 .add-list-toggle {
-  border: 1px solid #93c5fd;
-  background: transparent;
-  color: #1e3a8a;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  color: #111827;
   font-weight: 600;
   text-align: left;
   cursor: pointer;
