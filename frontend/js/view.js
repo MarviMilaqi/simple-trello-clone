@@ -51,9 +51,55 @@ export default class KanbanView {
       this.listsArea.appendChild(listNode);
     });
 
+    this.listsArea.appendChild(this.createAddListColumn());
+
     if (board.liste.length === 0) {
       this.listsArea.innerHTML = "<div class=\"list-placeholder\">Nessuna lista disponibile.</div>";
+      this.listsArea.appendChild(this.createAddListColumn());
     }
+  }
+
+  // Crea il blocco "+ Aggiungi una lista" stile Trello
+  createAddListColumn() {
+    const wrapper = document.createElement("article");
+    wrapper.className = "kanban-list add-list";
+
+    const toggle = document.createElement("button");
+    toggle.type = "button";
+    toggle.className = "add-list-toggle";
+    toggle.textContent = "+ Aggiungi una lista";
+
+    const form = document.createElement("form");
+    form.className = "add-list-form";
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.name = "list-title";
+    input.placeholder = "Titolo lista";
+    input.className = "add-list-input";
+
+    const actions = document.createElement("div");
+    actions.className = "add-list-actions";
+
+    const submit = document.createElement("button");
+    submit.type = "submit";
+    submit.className = "primary-button";
+    submit.textContent = "Aggiungi lista";
+
+    const cancel = document.createElement("button");
+    cancel.type = "button";
+    cancel.className = "ghost-button add-list-cancel";
+    cancel.textContent = "✕";
+
+    actions.appendChild(submit);
+    actions.appendChild(cancel);
+    form.appendChild(input);
+    form.appendChild(actions);
+
+    wrapper.appendChild(toggle);
+    wrapper.appendChild(form);
+
+    return wrapper;
   }
 
   // Mostra un modal con campi e ritorna i valori inseriti

@@ -130,6 +130,49 @@ body {
   flex: 0 0 280px;
 }
 
+.add-list {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px dashed rgba(148, 163, 184, 0.8);
+  justify-content: center;
+  min-height: 140px;
+}
+
+.add-list-toggle {
+  border: none;
+  background: transparent;
+  color: #1f2937;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.add-list-form {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.add-list.is-open .add-list-form {
+  display: flex;
+}
+
+.add-list.is-open .add-list-toggle {
+  display: none;
+}
+
+.add-list-input {
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 0.95rem;
+}
+
+.add-list-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
 .list-header {
   display: flex;
   justify-content: space-between;

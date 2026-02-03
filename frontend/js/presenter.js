@@ -70,7 +70,6 @@ export default class KanbanPresenter {
   // Collega gli eventi UI alle API
   bindActions() {
     const createBoardButton = document.getElementById("create-board");
-    const createListButton = document.getElementById("create-list");
     const openBoardsButton = document.getElementById("open-boards");
 
     createBoardButton.addEventListener("click", async () => {
@@ -114,42 +113,35 @@ export default class KanbanPresenter {
       }
     });
 
-    createListButton.addEventListener("click", async () => {
-      if (!this.currentBoardId) {
-        window.alert("Crea prima una board.");
-        return;
-      }
-
-      const formValues = await this.view.showFormModal({
-        title: "Nuova lista",
-        confirmText: "Crea",
-        fields: [
-          { name: "titolo", label: "Titolo", placeholder: "Nome lista" },
-        ],
-      });
-
-      if (!formValues || !formValues.titolo) {
-        return;
-      }
-
-      const board = this.model.getBoard();
-      const posizione = board?.liste?.length ?? 0;
-
-      try {
-        await this.apiClient.createList({
-          board_id: this.currentBoardId,
-          titolo: formValues.titolo.trim(),
-          posizione,
-        });
-        await this.loadBoard(this.currentBoardId);
-      } catch (error) {
-        window.alert(`Errore: ${error.message}`);
-      }
-    });
-
     this.view.listsArea.addEventListener("click", async (event) => {
+      const addListToggle = event.target.closest(".add-list-toggle");
+      const addListCancel = event.target.closest(".add-list-cancel");
       const listButton = event.target.closest(".list-action");
       const cardButton = event.target.closest(".card-action");
+
+      if (addListToggle) {
+        const addListColumn = addListToggle.closest(".add-list");
+        if (addListColumn) {
+          addListColumn.classList.add("is-open");
+          const input = addListColumn.querySelector(".add-list-input");
+          if (input) {
+            input.focus();
+          }
+        }
+        return;
+      }
+
+      if (addListCancel) {
+        const addListColumn = addListCancel.closest(".add-list");
+        if (addListColumn) {
+          addListColumn.classList.remove("is-open");
+          const input = addListColumn.querySelector(".add-list-input");
+          if (input) {
+            input.value = "";
+          }
+        }
+        return;
+      }
 
       if (listButton) {
         const action = listButton.dataset.action;
@@ -292,6 +284,39 @@ export default class KanbanPresenter {
         }
       }
     });
+
+    this.view.listsArea.addEventListener("submit", async (event) => {
+      const form = event.target.closest(".add-list-form");
+      if (!form) {
+        return;
+      }
+
+      event.preventDefault();
+      if (!this.currentBoardId) {
+        window.alert("Crea prima una board.");
+        return;
+      }
+
+      const input = form.querySelector(".add-list-input");
+      const title = input?.value?.trim();
+      if (!title) {
+        return;
+      }
+
+      const board = this.model.getBoard();
+      const posizione = board?.liste?.length ?? 0;
+
+      try {
+        await this.apiClient.createList({
+          board_id: this.currentBoardId,
+          titolo: title,
+          posizione,
+        });
+        await this.loadBoard(this.currentBoardId);
+      } catch (error) {
+        window.alert(`Errore: ${error.message}`);
+      }
+    });
   }
 
   // Attiva il drag & drop delle card nelle liste
@@ -393,7 +418,7 @@ export default class KanbanPresenter {
 
   // Calcola l'indice di inserimento in base alla card target (se presente)
   getDropIndex(container, pointerY) {
-    const cards = Array.from(container.querySelectorAll(".kanban-card"));
+    const cards = Array.from(container.querySelectorAll(".kanban-card:not(.is-dragging)"));
     if (cards.length === 0) {
       return 0;
     }
