@@ -147,13 +147,13 @@ body {
 
 .add-list-toggle {
   border: none;
-  background: rgba(226, 232, 240, 0.7);
+  background: transparent;
   color: #1f2937;
   font-weight: 600;
   text-align: left;
   cursor: pointer;
-  padding: 10px 12px;
-  border-radius: 10px;
+  padding: 10px 0;
+  border-radius: 0;
 }
 
 .add-list-form {

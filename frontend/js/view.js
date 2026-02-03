@@ -54,8 +54,10 @@ export default class KanbanView {
     this.listsArea.appendChild(this.createAddListColumn());
 
     if (board.liste.length === 0) {
-      this.listsArea.innerHTML = "<div class=\"list-placeholder\">Nessuna lista disponibile.</div>";
-      this.listsArea.appendChild(this.createAddListColumn());
+      const addList = this.createAddListColumn();
+      addList.classList.add("is-open");
+      this.listsArea.innerHTML = "";
+      this.listsArea.appendChild(addList);
     }
   }
 
@@ -67,7 +69,7 @@ export default class KanbanView {
     const toggle = document.createElement("button");
     toggle.type = "button";
     toggle.className = "add-list-toggle";
-    toggle.textContent = "+ Add a list";
+    toggle.textContent = "+ Aggiungi una lista";
 
     const form = document.createElement("form");
     form.className = "add-list-form";
