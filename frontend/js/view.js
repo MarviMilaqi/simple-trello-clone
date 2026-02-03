@@ -67,7 +67,7 @@ export default class KanbanView {
     const toggle = document.createElement("button");
     toggle.type = "button";
     toggle.className = "add-list-toggle";
-    toggle.textContent = "+ Aggiungi una lista";
+    toggle.textContent = "+ Add a list";
 
     const form = document.createElement("form");
     form.className = "add-list-form";
