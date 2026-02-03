@@ -359,8 +359,7 @@ export default class KanbanPresenter {
       }
 
       const targetListId = targetList.dataset.listId;
-      const targetCard = event.target.closest(".kanban-card");
-      const targetIndex = this.getDropIndex(container, targetCard);
+      const targetIndex = this.getDropIndex(container, event.clientY);
       const sourceListId = this.dragState.sourceListId;
 
       this.model.moveCard(this.dragState.cardId, sourceListId, targetListId, targetIndex);
@@ -393,14 +392,22 @@ export default class KanbanPresenter {
   }
 
   // Calcola l'indice di inserimento in base alla card target (se presente)
-  getDropIndex(container, targetCard) {
-    if (!targetCard) {
-      return container.children.length;
+  getDropIndex(container, pointerY) {
+    const cards = Array.from(container.querySelectorAll(".kanban-card"));
+    if (cards.length === 0) {
+      return 0;
     }
 
-    const cards = Array.from(container.children);
-    const index = cards.indexOf(targetCard);
-    return index < 0 ? cards.length : index;
+    for (let index = 0; index < cards.length; index += 1) {
+      const card = cards[index];
+      const box = card.getBoundingClientRect();
+      const midpoint = box.top + box.height / 2;
+      if (pointerY < midpoint) {
+        return index;
+      }
+    }
+
+    return cards.length;
   }
 
   // Evidenzia l'area di drop attiva
