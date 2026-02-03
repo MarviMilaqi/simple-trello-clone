@@ -57,6 +57,7 @@ body {
 
 .board-menu {
   position: relative;
+  margin-right: 4px;
 }
 
 .board-menu-panel {
@@ -244,7 +245,8 @@ body {
 
 .add-list-cancel {
   background: #ffffff;
-  color: #111827;
+  color: #4b5563;
+  border: 1px solid #e5e7eb;
 }
 
 .list-header {
