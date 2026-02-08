@@ -1,0 +1,47 @@
+version: "3.9"
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: trello_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: dF{REEGnh=9a{9Ia
+      MYSQL_DATABASE: trello_clone
+    ports:
+      - "3306:3306"
+    volumes:
+      - trello_db_data:/var/lib/mysql
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: trello_backend
+    restart: unless-stopped
+    environment:
+      DB_HOST: db
+      DB_NAME: trello_clone
+      DB_USER: root
+      DB_PASS: dF{REEGnh=9a{9Ia
+      DB_CHARSET: utf8mb4
+    volumes:
+      - ./:/var/www
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
+  frontend:
+    image: nginx:alpine
+    container_name: trello_frontend
+    restart: unless-stopped
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+    ports:
+      - "8000:80"
+    depends_on:
+      - backend
+
+volumes:
+  trello_db_data:
