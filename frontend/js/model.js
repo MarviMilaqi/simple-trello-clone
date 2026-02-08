@@ -31,11 +31,31 @@ export default class KanbanModel {
   constructor() {
     // Stato iniziale vuoto: verrà popolato dalla API
     this.board = null;
+    this.listeners = new Set();
+    
+  }
+
+  // Registra un osservatore per i cambi di stato
+  subscribe(listener) {
+    this.listeners.add(listener);
+    return () => this.unsubscribe(listener);
+  }
+
+  // Rimuove un osservatore registrato
+  unsubscribe(listener) {
+    this.listeners.delete(listener);
+  }
+
+  // Notifica tutti gli osservatori
+  notify() {
+    const snapshot = this.getBoard();
+    this.listeners.forEach((listener) => listener(snapshot));
   }
 
   // Imposta i dati della board
   setBoard(board) {
     this.board = board;
+    this.notify();
   }
 
   // Ritorna lo stato della board
@@ -118,6 +138,7 @@ export default class KanbanModel {
     });
 
     this.board = { ...board, liste: updatedLists };
+    this.notify();
     return this.getBoard();
   }
 }
