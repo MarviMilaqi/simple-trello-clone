@@ -105,7 +105,6 @@ Definire il contratto RESTful (CRUD) tra frontend e backend e lo schema dati MyS
   "list_id": 101,
   "titolo": "Definire requisiti",
   "descrizione": "Raccogliere bisogni e vincoli",
-  "label_color": "blue",
   "posizione": 1
 }
 ```
@@ -165,7 +164,6 @@ Definire il contratto RESTful (CRUD) tra frontend e backend e lo schema dati MyS
 - list_id (FK -> lists.id)
 - titolo (VARCHAR 160, NOT NULL)
 - descrizione (TEXT, NULL)
-- label_color (VARCHAR 32, NULL)
 - posizione (INT, NOT NULL, default 0)
 - created_at (DATETIME)
 - updated_at (DATETIME)
@@ -207,7 +205,6 @@ CREATE TABLE cards (
   list_id INT NOT NULL,
   titolo VARCHAR(160) NOT NULL,
   descrizione TEXT NULL,
-  label_color VARCHAR(32) NULL,
   posizione INT NOT NULL DEFAULT 0,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

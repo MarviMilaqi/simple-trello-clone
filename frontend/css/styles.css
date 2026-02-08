@@ -278,38 +278,6 @@ body {
   gap: 10px;
 }
 
-.card-labels {
-  display: flex;
-  gap: 6px;
-}
-
-.card-label {
-  width: 12px;
-  height: 12px;
-  border-radius: 999px;
-  background: #cbd5f5;
-}
-
-.card-label--red {
-  background: #f87171;
-}
-
-.card-label--blue {
-  background: #60a5fa;
-}
-
-.card-label--green {
-  background: #34d399;
-}
-
-.card-label--orange {
-  background: #fb923c;
-}
-
-.card-label--purple {
-  background: #c084fc;
-}
-
 .kanban-card.is-dragging {
   opacity: 0.5;
   border-style: dashed;
@@ -390,68 +358,6 @@ body {
   width: 100%;
   box-shadow: 0 16px 40px rgba(15, 23, 42, 0.2);
   padding: 20px 24px;
-}
-
-.label-options {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.label-option {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 10px;
-  border: 1px solid #e5e7eb;
-  border-radius: 999px;
-  cursor: pointer;
-  font-size: 0.85rem;
-  color: #4b5563;
-  background: #ffffff;
-}
-
-.label-option input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.label-dot {
-  width: 14px;
-  height: 14px;
-  border-radius: 999px;
-  display: inline-block;
-}
-
-.label-none {
-  background: #ffffff;
-  border: 1px solid #cbd5f5;
-}
-
-.label-red {
-  background: #f87171;
-}
-
-.label-blue {
-  background: #60a5fa;
-}
-
-.label-green {
-  background: #34d399;
-}
-
-.label-orange {
-  background: #fb923c;
-}
-
-.label-purple {
-  background: #c084fc;
-}
-
-.label-option input:checked + .label-dot {
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.6);
 }
 
 .modal-header h3 {

@@ -39,18 +39,9 @@ export default class KanbanView {
       lista.card.forEach((card) => {
         const cardNode = this.cardTemplate.content.cloneNode(true);
         const cardElement = cardNode.querySelector(".kanban-card");
-        const labelsContainer = cardNode.querySelector(".card-labels");
 
         cardNode.querySelector(".card-title").textContent = card.titolo;
         cardNode.querySelector(".card-description").textContent = card.descrizione ?? "";
-        if (labelsContainer) {
-          labelsContainer.innerHTML = "";
-          if (card.label_color) {
-            const label = document.createElement("span");
-            label.className = `card-label card-label--${card.label_color}`;
-            labelsContainer.appendChild(label);
-          }
-        }
         cardElement.dataset.cardId = card.id;
         cardElement.dataset.listId = lista.id;
         cardElement.draggable = true;
@@ -128,57 +119,23 @@ export default class KanbanView {
         label.textContent = field.label;
         label.setAttribute("for", field.name);
 
-        if (field.type === "label") {
-          const optionsWrapper = document.createElement("div");
-          optionsWrapper.className = "label-options";
-
-          (field.options ?? []).forEach((option) => {
-            const optionLabel = document.createElement("label");
-            optionLabel.className = "label-option";
-
-            const input = document.createElement("input");
-            input.type = "radio";
-            input.name = field.name;
-            input.value = option.value;
-            if (option.value === (field.value ?? "")) {
-              input.checked = true;
-            }
-
-            const dot = document.createElement("span");
-            const colorClass = option.value ? `label-dot label-${option.value}` : "label-dot label-none";
-            dot.className = colorClass;
-
-            const text = document.createElement("span");
-            text.className = "label-text";
-            text.textContent = option.label;
-
-            optionLabel.appendChild(input);
-            optionLabel.appendChild(dot);
-            optionLabel.appendChild(text);
-            optionsWrapper.appendChild(optionLabel);
-          });
-
-          fieldWrapper.appendChild(label);
-          fieldWrapper.appendChild(optionsWrapper);
+        let input;
+        if (field.type === "textarea") {
+          input = document.createElement("textarea");
         } else {
-          let input;
-          if (field.type === "textarea") {
-            input = document.createElement("textarea");
-          } else {
-            input = document.createElement("input");
-            input.type = field.type ?? "text";
-          }
-
-          input.id = field.name;
-          input.name = field.name;
-          input.value = field.value ?? "";
-          if (field.placeholder) {
-            input.placeholder = field.placeholder;
-          }
-
-          fieldWrapper.appendChild(label);
-          fieldWrapper.appendChild(input);
+          input = document.createElement("input");
+          input.type = field.type ?? "text";
         }
+
+        input.id = field.name;
+        input.name = field.name;
+        input.value = field.value ?? "";
+        if (field.placeholder) {
+          input.placeholder = field.placeholder;
+        }
+
+        fieldWrapper.appendChild(label);
+        fieldWrapper.appendChild(input);
         this.modalFields.appendChild(fieldWrapper);
       });
 
@@ -194,11 +151,6 @@ export default class KanbanView {
         event.preventDefault();
         const values = {};
         fields.forEach((field) => {
-          if (field.type === "label") {
-            const selected = this.modalFields.querySelector(`input[name="${field.name}"]:checked`);
-            values[field.name] = selected ? selected.value : "";
-            return;
-          }
           const input = this.modalFields.querySelector(`[name=\"${field.name}\"]`);
           values[field.name] = input ? input.value.trim() : "";
         });

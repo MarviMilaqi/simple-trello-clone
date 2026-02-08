@@ -210,12 +210,11 @@ function handleCards(PDO $pdo, string $method, ?string $id, array $input): void
             return;
         }
 
-        $stmt = $pdo->prepare('INSERT INTO cards (list_id, titolo, descrizione, label_color, posizione) VALUES (?, ?, ?, ?, ?)');
+        $stmt = $pdo->prepare('INSERT INTO cards (list_id, titolo, descrizione, posizione) VALUES (?, ?, ?, ?)');
         $stmt->execute([
             $input['list_id'],
             $input['titolo'],
             $input['descrizione'] ?? null,
-            $input['label_color'] ?? null,
             $input['posizione'] ?? 0,
         ]);
         $id = (int) $pdo->lastInsertId();
@@ -224,11 +223,10 @@ function handleCards(PDO $pdo, string $method, ?string $id, array $input): void
     }
 
     if ($method === 'PUT' && $id !== null) {
-        $stmt = $pdo->prepare('UPDATE cards SET titolo = ?, descrizione = ?, label_color = ?, list_id = ?, posizione = ? WHERE id = ?');
+        $stmt = $pdo->prepare('UPDATE cards SET titolo = ?, descrizione = ?, list_id = ?, posizione = ? WHERE id = ?');
         $stmt->execute([
             $input['titolo'] ?? null,
             $input['descrizione'] ?? null,
-            $input['label_color'] ?? null,
             $input['list_id'] ?? null,
             $input['posizione'] ?? 0,
             $id,

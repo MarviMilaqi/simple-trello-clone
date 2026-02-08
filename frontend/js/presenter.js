@@ -6,14 +6,6 @@ export default class KanbanPresenter {
     this.apiClient = apiClient;
     this.currentBoardId = null;
     this.boardsCache = [];
-    this.labelOptions = [
-      { value: "", label: "Nessuna" },
-      { value: "red", label: "Rosso" },
-      { value: "blue", label: "Blu" },
-      { value: "green", label: "Verde" },
-      { value: "orange", label: "Arancione" },
-      { value: "purple", label: "Viola" },
-    ];
     this.dragState = {
       cardId: null,
       sourceListId: null,
@@ -22,6 +14,9 @@ export default class KanbanPresenter {
 
   // Inizializza la UI con i dati del Model
   async init() {
+    this.model.subscribe((board) => {
+      this.view.renderBoard(board);
+    });
     await this.loadInitialBoard();
     this.bindActions();
     this.bindDragAndDrop();
@@ -37,7 +32,6 @@ export default class KanbanPresenter {
       if (!board) {
         this.currentBoardId = null;
         this.model.setBoard({ titolo: "Nessuna board", descrizione: "Crea una nuova board per iniziare.", liste: [] });
-        this.view.renderBoard(this.model.getBoard());
         return;
       }
 
@@ -45,7 +39,6 @@ export default class KanbanPresenter {
     } catch (error) {
       this.currentBoardId = null;
       this.model.setBoard({ titolo: "Errore", descrizione: error.message, liste: [] });
-      this.view.renderBoard(this.model.getBoard());
     }
   }
 
@@ -67,11 +60,9 @@ export default class KanbanPresenter {
         ...board,
         liste: listsWithCards,
       });
-      this.view.renderBoard(this.model.getBoard());
     } catch (error) {
       this.currentBoardId = null;
       this.model.setBoard({ titolo: "Errore", descrizione: error.message, liste: [] });
-      this.view.renderBoard(this.model.getBoard());
     }
   }
 
@@ -236,13 +227,6 @@ export default class KanbanPresenter {
             fields: [
               { name: "titolo", label: "Titolo", placeholder: "Titolo card" },
               { name: "descrizione", label: "Descrizione", type: "textarea", placeholder: "Descrizione (opzionale)" },
-              {
-                name: "label_color",
-                label: "Etichetta colore",
-                type: "label",
-                options: this.labelOptions,
-                value: "",
-              },
             ],
           });
 
@@ -258,7 +242,6 @@ export default class KanbanPresenter {
               list_id: listId,
               titolo: formValues.titolo.trim(),
               descrizione: formValues.descrizione?.trim() || null,
-              label_color: formValues.label_color || null,
               posizione,
             });
             await this.loadBoard(this.currentBoardId);
@@ -330,13 +313,6 @@ export default class KanbanPresenter {
             fields: [
               { name: "titolo", label: "Titolo", placeholder: "Titolo card", value: card?.titolo ?? "" },
               { name: "descrizione", label: "Descrizione", type: "textarea", value: card?.descrizione ?? "" },
-              {
-                name: "label_color",
-                label: "Etichetta colore",
-                type: "label",
-                options: this.labelOptions,
-                value: card?.label_color ?? "",
-              },
             ],
           });
 
@@ -348,7 +324,6 @@ export default class KanbanPresenter {
             await this.apiClient.updateCard(cardId, {
               titolo: formValues.titolo.trim(),
               descrizione: formValues.descrizione?.trim() || null,
-              label_color: formValues.label_color || null,
               list_id: listId,
               posizione: card?.posizione ?? 0,
             });
@@ -482,7 +457,6 @@ export default class KanbanPresenter {
       const sourceListId = this.dragState.sourceListId;
 
       this.model.moveCard(this.dragState.cardId, sourceListId, targetListId, targetIndex);
-      this.view.renderBoard(this.model.getBoard());
       this.clearDropHighlights();
 
       try {
@@ -553,7 +527,6 @@ export default class KanbanPresenter {
         this.apiClient.updateCard(card.id, {
           titolo: card.titolo,
           descrizione: card.descrizione ?? null,
-          label_color: card.label_color ?? null,
           list_id: list.id,
           posizione: index,
         })

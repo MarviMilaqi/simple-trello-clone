@@ -11,6 +11,10 @@ Drag-and-drop delle card nel frontend
 Persistenza delle modifiche tramite API backend
 Assegnazione dei task ai membri del gruppo
 
+## Design pattern utilizzati
+- **Model-View-Presenter (MVP)** per separare logica, UI e presentazione.
+- **Observer (Publisher/Subscriber)** per notificare la View quando lo stato del Model cambia.
+
 ## Avvio con Docker (WSL2/Docker Desktop)
 
 ### Prerequisiti
