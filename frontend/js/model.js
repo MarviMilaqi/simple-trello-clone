@@ -94,7 +94,7 @@ export default class KanbanModel {
     let updatedSourceCards = sourceCards;
     let updatedTargetCards = targetCards;
 
-    if (String(sourceListId) === String(targetListId)) { {
+    if (String(sourceListId) === String(targetListId)) {
       updatedSourceCards = reorderWithinList(sourceCards, cardIndex, resolvedTargetIndex);
       updatedTargetCards = updatedSourceCards;
     } else {
