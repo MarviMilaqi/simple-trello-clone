@@ -487,21 +487,26 @@ export default class KanbanPresenter {
 
   // Calcola l'indice di inserimento in base alla card target (se presente)
   getDropIndex(container, pointerY) {
-    const cards = Array.from(container.querySelectorAll(".kanban-card:not(.is-dragging)"));
+    const cards = Array.from(container.querySelectorAll(".kanban-card"));
     if (cards.length === 0) {
       return 0;
     }
 
-    for (let index = 0; index < cards.length; index += 1) {
-      const card = cards[index];
+    const draggableCards = cards.filter((card) => !card.classList.contains("is-dragging"));
+    if (draggableCards.length === 0) {
+      return cards.length;
+    }
+
+    for (const card of draggableCards) {
       const box = card.getBoundingClientRect();
       const midpoint = box.top + box.height / 2;
       if (pointerY < midpoint) {
-        return index;
+        return cards.indexOf(card);
       }
     }
 
-    return cards.length;
+    const lastCard = draggableCards[draggableCards.length - 1];
+    return cards.indexOf(lastCard) + 1;
   }
 
   // Evidenzia l'area di drop attiva
