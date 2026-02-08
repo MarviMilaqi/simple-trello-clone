@@ -1,15 +1,17 @@
 // Modello applicativo: gestisce lo stato locale della board
-export const reorderWithinList = (cards, fromIndex, insertIndex) => {
+export const reorderWithinList = (cards, fromIndex, toIndex) => {
   const updatedCards = [...cards];
   if (fromIndex < 0 || fromIndex >= updatedCards.length) {
     return updatedCards;
   }
 
   const [movedCard] = updatedCards.splice(fromIndex, 1);
+  const insertIndex = fromIndex < toIndex ? toIndex - 1 : toIndex;
   const clampedIndex = Math.max(0, Math.min(insertIndex, updatedCards.length));
   updatedCards.splice(clampedIndex, 0, movedCard);
   return updatedCards;
 };
+
 
 export const moveAcrossLists = (sourceCards, targetCards, fromIndex, toIndex) => {
   const updatedSource = [...sourceCards];
@@ -94,7 +96,7 @@ export default class KanbanModel {
     let updatedSourceCards = sourceCards;
     let updatedTargetCards = targetCards;
 
-    if (String(sourceListId) === String(targetListId)) {
+    if (sourceList === targetList) {
       updatedSourceCards = reorderWithinList(sourceCards, cardIndex, resolvedTargetIndex);
       updatedTargetCards = updatedSourceCards;
     } else {
