@@ -36,7 +36,8 @@ export default class KanbanView {
       titleElement.textContent = lista.titolo;
       listElement.dataset.listId = lista.id;
 
-      lista.card.forEach((card) => {
+      const cards = Array.isArray(lista.card) ? lista.card : [];
+      cards.forEach((card) => {
         const cardNode = this.cardTemplate.content.cloneNode(true);
         const cardElement = cardNode.querySelector(".kanban-card");
 
