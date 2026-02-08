@@ -399,8 +399,7 @@ export default class KanbanPresenter {
       }
 
       this.dragState.cardId = cardElement.dataset.cardId;
-      const sourceListEl = cardElement.closest(".kanban-list");
-      this.dragState.sourceListId = sourceListEl?.dataset?.listId ?? null;
+      this.dragState.sourceListId = cardElement.dataset.listId;
       cardElement.classList.add("is-dragging");
 
       if (event.dataTransfer) {
