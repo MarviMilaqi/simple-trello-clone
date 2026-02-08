@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clone Trello Semplificato</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <!-- Layout principale della bacheca Kanban -->
+  <header class="app-header">
+    <div>
+      <h1>Clone di Trello (Semplificato)</h1>
+      <p class="subtitle">Bacheca Kanban collaborativa per progetti di gruppo</p>
+    </div>
+    <div class="header-actions">
+      <div class="board-menu">
+        <button id="board-menu-toggle" class="icon-button" aria-haspopup="true" aria-expanded="false">⋯</button>
+        <div id="board-menu" class="board-menu-panel">
+          <button type="button" class="board-menu-item" data-action="rename-board">Modifica titolo</button>
+          <button type="button" class="board-menu-item danger" data-action="delete-board">Elimina board</button>
+        </div>
+      </div>
+      <button id="open-boards" class="secondary-button">Boards</button>
+      <button id="create-board" class="primary-button">Crea nuova board</button>
+    </div>
+  </header>
+
+  <main class="app-shell">
+    <!-- Sezione informativa della board selezionata -->
+    <section class="board-meta">
+      <div class="board-meta-header">
+        <div>
+          <h2 id="board-title">Project Web</h2>
+          <p id="board-description">Organizza le attività del team con liste e card.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Area liste: verrà popolata dal View tramite il Presenter -->
+    <section class="lists-area" id="lists-area">
+      <div class="list-placeholder">Caricamento liste...</div>
+    </section>
+  </main>
+
+  <template id="list-template">
+    <article class="kanban-list">
+      <header class="list-header">
+        <h3 class="list-title"></h3>
+        <button class="ghost-button list-action" data-action="add-card">+ Card</button>
+      </header>
+      <ul class="cards"></ul>
+      <footer class="list-footer">
+        <button class="ghost-button list-action" data-action="rename-list">Rinomina</button>
+        <button class="ghost-button list-action" data-action="remove-list">Elimina</button>
+      </footer>
+    </article>
+  </template>
+
+  <template id="card-template">
+    <li class="kanban-card">
+      <div class="card-labels"></div>
+      <div class="card-body">
+        <h4 class="card-title"></h4>
+        <p class="card-description"></p>
+      </div>
+      <div class="card-meta">
+        <div class="card-actions">
+          <button class="ghost-button card-action" data-action="edit-card">Modifica</button>
+          <button class="ghost-button card-action" data-action="delete-card">Elimina</button>
+        </div>
+      </div>
+    </li>
+  </template>
+
+  <div id="modal-overlay" class="modal-overlay is-hidden" aria-hidden="true">
+    <div class="modal">
+      <header class="modal-header">
+        <h3 id="modal-title"></h3>
+      </header>
+      <form id="modal-form" class="modal-form">
+        <div id="modal-fields"></div>
+        <div class="modal-actions">
+          <button type="button" id="modal-cancel" class="ghost-button">Annulla</button>
+          <button type="submit" id="modal-confirm" class="primary-button">Conferma</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
