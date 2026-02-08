@@ -1,4 +1,32 @@
 // Modello applicativo: gestisce lo stato locale della board
+export const reorderWithinList = (cards, fromIndex, toIndex) => {
+  const updatedCards = [...cards];
+  if (fromIndex < 0 || fromIndex >= updatedCards.length) {
+    return updatedCards;
+  }
+
+  const [movedCard] = updatedCards.splice(fromIndex, 1);
+  const insertIndex = fromIndex < toIndex ? toIndex - 1 : toIndex;
+  const clampedIndex = Math.max(0, Math.min(insertIndex, updatedCards.length));
+  updatedCards.splice(clampedIndex, 0, movedCard);
+  return updatedCards;
+};
+
+export const moveAcrossLists = (sourceCards, targetCards, fromIndex, toIndex) => {
+  const updatedSource = [...sourceCards];
+  const updatedTarget = [...targetCards];
+
+  if (fromIndex < 0 || fromIndex >= updatedSource.length) {
+    return { sourceCards: updatedSource, targetCards: updatedTarget };
+  }
+
+  const [movedCard] = updatedSource.splice(fromIndex, 1);
+  const clampedIndex = Math.max(0, Math.min(toIndex, updatedTarget.length));
+  updatedTarget.splice(clampedIndex, 0, movedCard);
+
+  return { sourceCards: updatedSource, targetCards: updatedTarget };
+};
+
 export default class KanbanModel {
   constructor() {
     // Stato iniziale vuoto: verrà popolato dalla API
@@ -47,9 +75,10 @@ export default class KanbanModel {
       return null;
     }
 
-    const sourceList = this.board.liste.find((lista) => String(lista.id) === String(sourceListId));
-    const targetList = this.board.liste.find((lista) => String(lista.id) === String(targetListId));
-
+    const board = this.board;
+    const sourceList = board.liste.find((lista) => String(lista.id) === String(sourceListId));
+    const targetList = board.liste.find((lista) => String(lista.id) === String(targetListId));
+   
     if (!sourceList || !targetList) {
       return this.getBoard();
     }
@@ -62,20 +91,33 @@ export default class KanbanModel {
       return this.getBoard();
     }
 
-    const [movedCard] = sourceCards.splice(cardIndex, 1);
-    let insertIndex = typeof targetIndex === "number" ? targetIndex : targetCards.length;
+    const resolvedTargetIndex = typeof targetIndex === "number" ? targetIndex : targetCards.length;
+    let updatedSourceCards = sourceCards;
+    let updatedTargetCards = targetCards;
 
-    insertIndex = Math.max(0, Math.min(insertIndex, targetCards.length));
-
-    if (sourceList === targetList && cardIndex < insertIndex) {
-      insertIndex -= 1;
+    if (sourceList === targetList) {
+      updatedSourceCards = reorderWithinList(sourceCards, cardIndex, resolvedTargetIndex);
+      updatedTargetCards = updatedSourceCards;
+    } else {
+      const moved = moveAcrossLists(sourceCards, targetCards, cardIndex, resolvedTargetIndex);
+      updatedSourceCards = moved.sourceCards;
+      updatedTargetCards = moved.targetCards;
     }
 
-    targetCards.splice(insertIndex, 0, movedCard);
+    const updatedLists = board.liste.map((lista) => {
+      if (String(lista.id) === String(sourceListId) && String(lista.id) === String(targetListId)) {
+        return { ...lista, card: updatedSourceCards };
+      }
+      if (String(lista.id) === String(sourceListId)) {
+        return { ...lista, card: updatedSourceCards };
+      }
+      if (String(lista.id) === String(targetListId)) {
+        return { ...lista, card: updatedTargetCards };
+      }
+      return lista;
+    });
 
-    sourceList.card = sourceCards;
-    targetList.card = targetCards;
-
+    this.board = { ...board, liste: updatedLists };
     return this.getBoard();
   }
 }
