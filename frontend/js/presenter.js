@@ -14,6 +14,9 @@ export default class KanbanPresenter {
 
   // Inizializza la UI con i dati del Model
   async init() {
+    this.model.subscribe((board) => {
+      this.view.renderBoard(board);
+    });
     await this.loadInitialBoard();
     this.bindActions();
     this.bindDragAndDrop();
@@ -29,7 +32,6 @@ export default class KanbanPresenter {
       if (!board) {
         this.currentBoardId = null;
         this.model.setBoard({ titolo: "Nessuna board", descrizione: "Crea una nuova board per iniziare.", liste: [] });
-        this.view.renderBoard(this.model.getBoard());
         return;
       }
 
@@ -37,7 +39,6 @@ export default class KanbanPresenter {
     } catch (error) {
       this.currentBoardId = null;
       this.model.setBoard({ titolo: "Errore", descrizione: error.message, liste: [] });
-      this.view.renderBoard(this.model.getBoard());
     }
   }
 
@@ -59,11 +60,9 @@ export default class KanbanPresenter {
         ...board,
         liste: listsWithCards,
       });
-      this.view.renderBoard(this.model.getBoard());
     } catch (error) {
       this.currentBoardId = null;
       this.model.setBoard({ titolo: "Errore", descrizione: error.message, liste: [] });
-      this.view.renderBoard(this.model.getBoard());
     }
   }
 
@@ -458,7 +457,6 @@ export default class KanbanPresenter {
       const sourceListId = this.dragState.sourceListId;
 
       this.model.moveCard(this.dragState.cardId, sourceListId, targetListId, targetIndex);
-      this.view.renderBoard(this.model.getBoard());
       this.clearDropHighlights();
 
       try {
