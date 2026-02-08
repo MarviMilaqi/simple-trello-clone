@@ -509,9 +509,6 @@ export default class KanbanPresenter {
     return cards.indexOf(lastCard) + 1;
   }
 
-    
-  }
-
   // Evidenzia l'area di drop attiva
   highlightDropTarget(container) {
     this.clearDropHighlights();
