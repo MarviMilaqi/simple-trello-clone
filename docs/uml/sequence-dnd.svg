@@ -30,7 +30,7 @@
   <text class="text" x="320" y="160">onDrop(cardId, targetList)</text>
 
   <line class="arrow" x1="520" y1="220" x2="520" y2="220" />
-  <text class="text" x="540" y="215">model.moveCard()</text>
+  <text class="text" x="540" y="235">model.moveCard()</text>
 
   <line class="arrow" x1="520" y1="270" x2="300" y2="270" />
   <text class="text" x="320" y="260">view.renderBoard()</text>
