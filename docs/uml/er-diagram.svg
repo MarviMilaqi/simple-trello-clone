@@ -44,13 +44,13 @@
   <text class="text" x="380" y="435">member_id (FK)</text>
   <text class="text" x="380" y="455">assigned_at</text>
 
-  <line class="link" x1="300" y1="140" x2="360" y2="140" />
-  <line class="link" x1="600" y1="150" x2="660" y2="150" />
-  <line class="link" x1="660" y1="450" x2="480" y2="450" />
-  <line class="link" x1="300" y1="430" x2="360" y2="430" />
+  <line class="link" x1="300" y1="145" x2="360" y2="145" />
+  <line class="link" x1="600" y1="165" x2="660" y2="165" />
+  <line class="link" x1="780" y1="270" x2="490" y2="360" />
+  <line class="link" x1="300" y1="445" x2="360" y2="445" />
 
-  <text class="text" x="320" y="130">1..*</text>
-  <text class="text" x="620" y="140">1..*</text>
-  <text class="text" x="530" y="440">*..*</text>
-  <text class="text" x="320" y="420">1..*</text>
+  <text class="text" x="320" y="135">1..*</text>
+  <text class="text" x="620" y="155">1..*</text>
+  <text class="text" x="640" y="300">1..*</text>
+  <text class="text" x="320" y="435">1..*</text>
 </svg>
