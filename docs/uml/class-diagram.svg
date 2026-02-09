@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="360" viewBox="0 0 720 360">
+  <style>
+    .class-box { fill: #ffffff; stroke: #1f2933; stroke-width: 2; }
+    .divider { stroke: #1f2933; stroke-width: 2; }
+    .title { font: 700 20px "Helvetica Neue", Arial, sans-serif; fill: #111827; }
+    .text { font: 16px "Helvetica Neue", Arial, sans-serif; fill: #111827; }
+  </style>
+  <rect class="class-box" x="60" y="40" width="600" height="280" rx="6" />
+  <line class="divider" x1="60" y1="90" x2="660" y2="90" />
+  <line class="divider" x1="60" y1="130" x2="660" y2="130" />
+
+  <text class="title" x="360" y="72" text-anchor="middle">KanbanView</text>
+
+  <text class="text" x="90" y="165">+ constructor()</text>
+  <text class="text" x="90" y="190">+ renderBoard(board)</text>
+  <text class="text" x="90" y="215">+ createAddListColumn()</text>
+  <text class="text" x="90" y="240">+ showFormModal(options)</text>
+  <text class="text" x="90" y="265">+ showConfirmModal(options)</text>
+  <text class="text" x="90" y="290">+ showBoardsModal(options)</text>
+</svg>
