@@ -66,6 +66,19 @@ Realizzare un clone semplificato di Trello: una bacheca Kanban collaborativa per
 - **View**: DOM + template statici HTML.
 - **Presenter**: logica UI + orchestrazione chiamate API.
 
+## Diagrammi UML ed ER
+I diagrammi sono disponibili nella cartella `docs/uml/`.
+
+### Diagramma delle classi (MVP + ApiClient + entità)
+![Diagramma delle classi](uml/class-diagram.svg)
+
+### Diagrammi di sequenza
+![Sequenza creazione card](uml/sequence-create-card.svg)
+![Sequenza drag & drop con persistenza](uml/sequence-dnd.svg)
+
+### Diagramma ER database
+![Diagramma ER](uml/er-diagram.svg)
+
 ## Checklist fase 1 (completata)
 - [x] Requisiti e vincoli raccolti.
 - [x] Entità di dominio definite.
