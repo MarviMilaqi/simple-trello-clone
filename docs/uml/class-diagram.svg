@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#2b2b2b" />
+    </marker>
+    <style>
+      .box { fill: #f8fafc; stroke: #1f2937; stroke-width: 1.5; rx: 6; }
+      .title { font: 700 16px 'Arial', sans-serif; fill: #111827; }
+      .text { font: 13px 'Arial', sans-serif; fill: #111827; }
+      .link { stroke: #2b2b2b; stroke-width: 1.4; marker-end: url(#arrow); }
+      .dash { stroke-dasharray: 6 4; }
+    </style>
+  </defs>
+
+  <rect class="box" x="60" y="60" width="260" height="160" />
+  <text class="title" x="80" y="90">KanbanView</text>
+  <text class="text" x="80" y="120">+ renderBoard()</text>
+  <text class="text" x="80" y="140">+ bindUI()</text>
+  <text class="text" x="80" y="160">+ showFormModal()</text>
+
+  <rect class="box" x="430" y="40" width="320" height="200" />
+  <text class="title" x="450" y="70">KanbanPresenter</text>
+  <text class="text" x="450" y="100">+ init()</text>
+  <text class="text" x="450" y="120">+ loadBoard()</text>
+  <text class="text" x="450" y="140">+ bindActions()</text>
+  <text class="text" x="450" y="160">+ bindDragAndDrop()</text>
+
+  <rect class="box" x="850" y="60" width="280" height="160" />
+  <text class="title" x="870" y="90">ApiClient</text>
+  <text class="text" x="870" y="120">+ getBoards()</text>
+  <text class="text" x="870" y="140">+ getLists()</text>
+  <text class="text" x="870" y="160">+ createCard()</text>
+
+  <rect class="box" x="430" y="300" width="320" height="210" />
+  <text class="title" x="450" y="330">KanbanModel</text>
+  <text class="text" x="450" y="360">+ setBoard()</text>
+  <text class="text" x="450" y="380">+ getBoard()</text>
+  <text class="text" x="450" y="400">+ moveCard()</text>
+  <text class="text" x="450" y="420">+ subscribe()</text>
+
+  <rect class="box" x="80" y="520" width="220" height="180" />
+  <text class="title" x="100" y="550">Board</text>
+  <text class="text" x="100" y="575">id</text>
+  <text class="text" x="100" y="595">titolo</text>
+  <text class="text" x="100" y="615">descrizione</text>
+
+  <rect class="box" x="350" y="520" width="220" height="180" />
+  <text class="title" x="370" y="550">Lista</text>
+  <text class="text" x="370" y="575">id</text>
+  <text class="text" x="370" y="595">titolo</text>
+  <text class="text" x="370" y="615">board_id</text>
+
+  <rect class="box" x="620" y="520" width="220" height="180" />
+  <text class="title" x="640" y="550">Card</text>
+  <text class="text" x="640" y="575">id</text>
+  <text class="text" x="640" y="595">titolo</text>
+  <text class="text" x="640" y="615">list_id</text>
+
+  <rect class="box" x="890" y="520" width="220" height="180" />
+  <text class="title" x="910" y="550">Member</text>
+  <text class="text" x="910" y="575">id</text>
+  <text class="text" x="910" y="595">nome</text>
+  <text class="text" x="910" y="615">email</text>
+
+  <line class="link" x1="320" y1="140" x2="430" y2="140" />
+  <line class="link" x1="750" y1="140" x2="850" y2="140" />
+  <line class="link" x1="590" y1="240" x2="590" y2="300" />
+  <line class="link dash" x1="590" y1="300" x2="200" y2="520" />
+
+  <line class="link" x1="200" y1="700" x2="350" y2="700" />
+  <line class="link" x1="460" y1="700" x2="620" y2="700" />
+  <line class="link dash" x1="730" y1="520" x2="890" y2="520" />
+
+  <text class="text" x="230" y="690">1..*</text>
+  <text class="text" x="500" y="690">1..*</text>
+  <text class="text" x="805" y="505">assigns</text>
+</svg>
