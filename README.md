@@ -23,25 +23,19 @@ Persistenza delle modifiche tramite API backend
 ### Run on a new PC
 1. Installa **Docker Desktop** e avvialo.
 2. Clona la repository.
-3. Copia `.env.example` in `.env`:
-
-```bash
-cp .env.example .env
-```
-
-4. Modifica `.env` e compila i valori richiesti (es. password DB).
-
-5. Copia `backend/config.php.example` in `backend/config.php`:
-
-```bash
-cp backend/config.php.example backend/config.php
-```
-
-6. Avvia lo stack:
+3. Avvia lo stack (setup completo in un solo comando):
 
 ```bash
 docker compose up --build
 ```
+Questo progetto include già i default Docker per DB, backend e frontend: **non serve installare MySQL in locale** né conoscere/configurare manualmente password MySQL per il primo avvio.
+
+4. (Opzionale) Se vuoi personalizzare porte o credenziali, copia `.env.example` in `.env`:
+
+```bash
+cp .env.example .env
+```
+5. (Opzionale) Modifica `.env` con i valori desiderati
 
 ### URL attesi e API smoke test
 - Frontend: http://localhost:8000
@@ -77,15 +71,8 @@ Se vedi errori di bind/allocation, significa che una delle porte è già in uso 
 Chiudi i processi in conflitto oppure modifica il mapping porte in `docker-compose.yml`.
 
 ### Errore `CONFIG_MISSING` dal backend
-Se l'API risponde con errore `CONFIG_MISSING`, significa che manca il file `backend/config.php` (controllo fatto in `backend/index.php`).
 
-**Fix rapido:**
-
-```bash
-cp backend/config.php.example backend/config.php
-```
-
-Poi riavvia il backend (o lo stack Docker) e riprova la chiamata API.
+Se l'API risponde con errore `CONFIG_MISSING`, verifica di avere una copia aggiornata della repository: `backend/config.php` è incluso e legge i valori da variabili ambiente con fallback di default.
 
 ### Setup rapido (opzionale)
 Puoi usare un target `make` per creare `backend/config.php` solo se manca:
