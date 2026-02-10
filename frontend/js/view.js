@@ -42,6 +42,8 @@ export default class KanbanView {
 
         cardNode.querySelector(".card-title").textContent = card.titolo;
         cardNode.querySelector(".card-description").textContent = card.descrizione ?? "";
+        const assignee = card.assegnatario ?? "Non assegnato";
+        cardNode.querySelector(".card-assignee").textContent = `Assegnato a: ${assignee}`;
         cardElement.dataset.cardId = card.id;
         cardElement.dataset.listId = lista.id;
         cardElement.draggable = true;
