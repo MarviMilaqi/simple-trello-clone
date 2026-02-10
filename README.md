@@ -23,7 +23,15 @@ Assegnazione dei task ai membri del gruppo
 
 ### Come avviare lo stack
 1. Apri un terminale nella root del progetto (dove c’è `docker-compose.yml`).
-2. Avvia i container:
+2. Copia il file di esempio delle variabili ambiente e inserisci valori sicuri:
+
+```bash
+cp .env.example .env
+```
+
+3. Modifica `.env` e compila i valori richiesti (es. password DB).
+4. Avvia i container:
+
 
 ```bash
 docker compose up --build
