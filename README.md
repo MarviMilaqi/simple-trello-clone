@@ -44,6 +44,14 @@ cp backend/config.php.example backend/config.php
 docker compose up --build
 ```
 
+### Inizializzazione DB e dati demo
+- Lo schema MySQL viene creato automaticamente al primo avvio di MySQL tramite `backend/db/init.sql` (montato in `/docker-entrypoint-initdb.d/init.sql`).
+- Dati demo opzionali disponibili in `backend/db/seed.sql`. Per caricarli manualmente:
+
+```bash
+docker compose exec -T db mysql -u"$DB_USER" -p"$DB_PASS" "$DB_NAME" < backend/db/seed.sql
+```
+
 ### URL utili
 - Frontend: http://localhost:8000
 - Backend API: http://localhost:8080/api
