@@ -29,8 +29,15 @@ Assegnazione dei task ai membri del gruppo
 cp .env.example .env
 ```
 
-3. Modifica `.env` e compila i valori richiesti (es. password DB).
-4. Avvia i container:
+3. Prima esecuzione backend: crea il file di configurazione locale se non esiste:
+
+```bash
+cp backend/config.php.example backend/config.php
+```
+
+4. Modifica `.env` e compila i valori richiesti (es. password DB).
+5. Avvia i container:
+
 
 
 ```bash
@@ -53,4 +60,24 @@ Per fermare lo stack:
 
 ```bash
 docker compose down
+```
+
+## Troubleshooting
+
+### Errore `CONFIG_MISSING` dal backend
+Se l'API risponde con errore `CONFIG_MISSING`, significa che manca il file `backend/config.php` (controllo fatto in `backend/index.php`).
+
+**Fix rapido:**
+
+```bash
+cp backend/config.php.example backend/config.php
+```
+
+Poi riavvia il backend (o lo stack Docker) e riprova la chiamata API.
+
+### Setup rapido (opzionale)
+Puoi usare un target `make` per creare `backend/config.php` solo se manca:
+
+```bash
+make setup-config
 ```
