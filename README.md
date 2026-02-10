@@ -59,17 +59,6 @@ Se tutto è ok, la risposta deve avere status HTTP `200`.
 ### Inizializzazione DB e dati demo
 - Lo schema MySQL viene creato automaticamente al primo avvio di MySQL tramite `backend/db/init.sql` (montato in `/docker-entrypoint-initdb.d/init.sql`).
 
-### URL utili
-- Frontend: http://localhost:8000
-- Backend API: http://localhost:8080/api
-- MySQL: porta 3306 (solo se ti serve accedervi dall’esterno)
-
-### Come “aggiungere” i Dockerfile a Docker Desktop o WSL2
-Non devi importare nulla manualmente in Docker Desktop o WSL2.  
-È sufficiente **avviare il comando `docker compose up --build`** nella cartella del progetto:
-- Docker Desktop rileva automaticamente i Dockerfile e li costruisce.
-- Su WSL2, esegui il comando da una shell WSL nella cartella del repo.
-
 ### Stop dei container
 Per fermare lo stack:
 
