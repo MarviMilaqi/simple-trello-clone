@@ -1,0 +1,14 @@
+# OS/editor
+.DS_Store
+.idea/
+.vscode/
+
+# Node/frontend
+node_modules/
+dist/
+build/
+
+# PHP/backend
+vendor/
+.env
+config.php
