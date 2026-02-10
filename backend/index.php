@@ -180,20 +180,30 @@ function handleLists(PDO $pdo, string $method, ?string $id, array $input): void
 
 function handleCards(PDO $pdo, string $method, ?string $id, array $input): void
 {
+    $hasAssigneeColumn = cardsHasAssigneeColumn($pdo);
+    
     if ($method === 'GET' && $id === null) {
         $listId = $_GET['list_id'] ?? null;
+        $selectFields = $hasAssigneeColumn
+            ? 'id, list_id, titolo, descrizione, assegnatario, posizione, created_at, updated_at'
+            : 'id, list_id, titolo, descrizione, NULL AS assegnatario, posizione, created_at, updated_at';
+        
         if ($listId !== null) {
-            $stmt = $pdo->prepare('SELECT * FROM cards WHERE list_id = ? ORDER BY posizione ASC');
+            $stmt = $pdo->prepare("SELECT $selectFields FROM cards WHERE list_id = ? ORDER BY posizione ASC");
             $stmt->execute([$listId]);
         } else {
-            $stmt = $pdo->query('SELECT * FROM cards ORDER BY list_id ASC, posizione ASC');
+            $stmt = $pdo->query("SELECT $selectFields FROM cards ORDER BY list_id ASC, posizione ASC");
         }
         Response::json($stmt->fetchAll());
         return;
     }
 
     if ($method === 'GET' && $id !== null) {
-        $stmt = $pdo->prepare('SELECT * FROM cards WHERE id = ?');
+        $selectFields = $hasAssigneeColumn
+            ? 'id, list_id, titolo, descrizione, assegnatario, posizione, created_at, updated_at'
+            : 'id, list_id, titolo, descrizione, NULL AS assegnatario, posizione, created_at, updated_at';
+
+        $stmt = $pdo->prepare("SELECT $selectFields FROM cards WHERE id = ?");
         $stmt->execute([$id]);
         $card = $stmt->fetch();
         if (!$card) {
@@ -210,27 +220,52 @@ function handleCards(PDO $pdo, string $method, ?string $id, array $input): void
             return;
         }
 
-        $stmt = $pdo->prepare('INSERT INTO cards (list_id, titolo, descrizione, posizione) VALUES (?, ?, ?, ?)');
-        $stmt->execute([
-            $input['list_id'],
-            $input['titolo'],
-            $input['descrizione'] ?? null,
-            $input['posizione'] ?? 0,
-        ]);
+        if ($hasAssigneeColumn) {
+            $stmt = $pdo->prepare('INSERT INTO cards (list_id, titolo, descrizione, assegnatario, posizione) VALUES (?, ?, ?, ?, ?)');
+            $stmt->execute([
+                $input['list_id'],
+                $input['titolo'],
+                $input['descrizione'] ?? null,
+                $input['assegnatario'] ?? null,
+                $input['posizione'] ?? 0,
+            ]);
+        } else {
+            $stmt = $pdo->prepare('INSERT INTO cards (list_id, titolo, descrizione, posizione) VALUES (?, ?, ?, ?)');
+            $stmt->execute([
+                $input['list_id'],
+                $input['titolo'],
+                $input['descrizione'] ?? null,
+                $input['posizione'] ?? 0,
+            ]);
+        }
+        
         $id = (int) $pdo->lastInsertId();
         Response::json(['id' => $id], 201);
         return;
     }
 
     if ($method === 'PUT' && $id !== null) {
-        $stmt = $pdo->prepare('UPDATE cards SET titolo = ?, descrizione = ?, list_id = ?, posizione = ? WHERE id = ?');
-        $stmt->execute([
-            $input['titolo'] ?? null,
-            $input['descrizione'] ?? null,
-            $input['list_id'] ?? null,
-            $input['posizione'] ?? 0,
-            $id,
-        ]);
+        if ($hasAssigneeColumn) {
+            $stmt = $pdo->prepare('UPDATE cards SET titolo = ?, descrizione = ?, assegnatario = ?, list_id = ?, posizione = ? WHERE id = ?');
+            $stmt->execute([
+                $input['titolo'] ?? null,
+                $input['descrizione'] ?? null,
+                $input['assegnatario'] ?? null,
+                $input['list_id'] ?? null,
+                $input['posizione'] ?? 0,
+                $id,
+            ]);
+        } else {
+            $stmt = $pdo->prepare('UPDATE cards SET titolo = ?, descrizione = ?, list_id = ?, posizione = ? WHERE id = ?');
+            $stmt->execute([
+                $input['titolo'] ?? null,
+                $input['descrizione'] ?? null,
+                $input['list_id'] ?? null,
+                $input['posizione'] ?? 0,
+                $id,
+            ]);
+        }
+
         Response::json(['updated' => $stmt->rowCount() > 0]);
         return;
     }
@@ -244,6 +279,21 @@ function handleCards(PDO $pdo, string $method, ?string $id, array $input): void
 
     Response::error('Metodo non supportato', 'METHOD_NOT_ALLOWED', 405);
 }
+
+function cardsHasAssigneeColumn(PDO $pdo): bool
+{
+    static $cachedResult = null;
+
+    if ($cachedResult !== null) {
+        return $cachedResult;
+    }
+
+    $stmt = $pdo->query("SHOW COLUMNS FROM cards LIKE 'assegnatario'");
+    $cachedResult = $stmt->fetch() !== false;
+
+    return $cachedResult;
+}
+
 
 function handleMembers(PDO $pdo, string $method, ?string $id, array $input): void
 {
