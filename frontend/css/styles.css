@@ -294,13 +294,18 @@ body {
   font-size: 0.9rem;
 }
 
+.card-assignee {
+  display: inline-block;
+  margin-top: 4px;
+  color: #9ca3af;
+  font-size: 0.82rem;
+}
+
 .card-meta {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   gap: 8px;
-  font-size: 0.85rem;
-  color: #6b7280;
 }
 
 .card-actions {
