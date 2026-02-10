@@ -227,6 +227,7 @@ export default class KanbanPresenter {
             fields: [
               { name: "titolo", label: "Titolo", placeholder: "Titolo card" },
               { name: "descrizione", label: "Descrizione", type: "textarea", placeholder: "Descrizione (opzionale)" },
+              { name: "assegnatario", label: "Assegnato a", placeholder: "Nome assegnatario (opzionale)" },
             ],
           });
 
@@ -242,6 +243,7 @@ export default class KanbanPresenter {
               list_id: listId,
               titolo: formValues.titolo.trim(),
               descrizione: formValues.descrizione?.trim() || null,
+              assegnatario: formValues.assegnatario?.trim() || null,
               posizione,
             });
             await this.loadBoard(this.currentBoardId);
@@ -313,6 +315,7 @@ export default class KanbanPresenter {
             fields: [
               { name: "titolo", label: "Titolo", placeholder: "Titolo card", value: card?.titolo ?? "" },
               { name: "descrizione", label: "Descrizione", type: "textarea", value: card?.descrizione ?? "" },
+              { name: "assegnatario", label: "Assegnato a", placeholder: "Nome assegnatario (opzionale)", value: card?.assegnatario ?? "" },
             ],
           });
 
@@ -324,6 +327,7 @@ export default class KanbanPresenter {
             await this.apiClient.updateCard(cardId, {
               titolo: formValues.titolo.trim(),
               descrizione: formValues.descrizione?.trim() || null,
+              assegnatario: formValues.assegnatario?.trim() || null,
               list_id: listId,
               posizione: card?.posizione ?? 0,
             });
