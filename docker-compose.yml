@@ -6,10 +6,10 @@ services:
     container_name: trello_db
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: dF{REEGnh=9a{9Ia
-      MYSQL_DATABASE: trello_clone
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
     ports:
-      - "3306:3306"
+      - "${DB_PORT:-3306}:3306"
     volumes:
       - trello_db_data:/var/lib/mysql
 
@@ -21,14 +21,14 @@ services:
     restart: unless-stopped
     environment:
       DB_HOST: db
-      DB_NAME: trello_clone
-      DB_USER: root
-      DB_PASS: dF{REEGnh=9a{9Ia
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
       DB_CHARSET: utf8mb4
     volumes:
       - ./:/var/www
     ports:
-      - "8080:8080"
+      - "${BACKEND_PORT:-8080}:8080"
     depends_on:
       - db
 
@@ -39,7 +39,7 @@ services:
     volumes:
       - ./frontend:/usr/share/nginx/html:ro
     ports:
-      - "8000:80"
+      - "${FRONTEND_PORT:-8000}:80"
     depends_on:
       - backend
 
