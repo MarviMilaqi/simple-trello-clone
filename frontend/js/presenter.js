@@ -531,6 +531,7 @@ export default class KanbanPresenter {
         this.apiClient.updateCard(card.id, {
           titolo: card.titolo,
           descrizione: card.descrizione ?? null,
+          assegnatario: card.assegnatario ?? null,
           list_id: list.id,
           posizione: index,
         })
