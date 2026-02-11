@@ -40,7 +40,7 @@ services:
     volumes:
       - ./frontend:/usr/share/nginx/html:ro
     ports:
-      - "${FRONTEND_PORT:-9090}:80"
+      - "${FRONTEND_PORT:-8000}:80"
     depends_on:
       - backend
 
