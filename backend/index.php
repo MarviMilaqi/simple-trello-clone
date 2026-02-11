@@ -284,7 +284,6 @@ function handleCards(PDO $pdo, string $method, ?string $id, array $input): void
     }
 
     Response::error('Metodo non supportato', 'METHOD_NOT_ALLOWED', 405);
-}
 
 require_once __DIR__ . '/lib/Database.php';
 require_once __DIR__ . '/lib/Response.php';
@@ -366,6 +365,7 @@ switch ($resource) {
     }
 
     Response::error('Metodo non supportato', 'METHOD_NOT_ALLOWED', 405);
+}
 
 function ensureCardsTableExists(PDO $pdo): void
 {
