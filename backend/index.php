@@ -185,6 +185,7 @@ function handleLists(PDO $pdo, string $method, ?string $id, array $input): void
 
 function handleCards(PDO $pdo, string $method, ?string $id, array $input): void
 {
+    ensureCardsTableExists($pdo);
     $hasAssigneeColumn = cardsHasAssigneeColumn($pdo);
     
     if ($method === 'GET' && $id === null) {
@@ -285,6 +286,167 @@ function handleCards(PDO $pdo, string $method, ?string $id, array $input): void
     Response::error('Metodo non supportato', 'METHOD_NOT_ALLOWED', 405);
 }
 
+<?php
+require_once __DIR__ . '/lib/Database.php';
+require_once __DIR__ . '/lib/Response.php';
+
+$configPath = __DIR__ . '/config.php';
+if (!file_exists($configPath)) {
+    Response::error('Config mancante: copia config.php.example in config.php', 'CONFIG_MISSING', 500);
+    exit;
+}
+
+$config = require $configPath;
+
+// CORS
+header('Access-Control-Allow-Origin: ' . $config['cors']['allowed_origins']);
+header('Access-Control-Allow-Methods: ' . $config['cors']['allowed_methods']);
+header('Access-Control-Allow-Headers: ' . $config['cors']['allowed_headers']);
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(204);
+    exit;
+}
+
+$database = new Database($config);
+$pdo = $database->getConnection();
+try {
+    $database = new Database($config);
+    $pdo = $database->getConnection();
+} catch (PDOException $exception) {
+    Response::error('Errore connessione database: verifica credenziali e stato del container MySQL.', 'DB_CONNECTION_ERROR', 500);
+    exit;
+}
+
+$method = $_SERVER['REQUEST_METHOD'];
+$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$uri = rtrim($uri, '/');
+
+$basePath = '/api';
+if (!str_starts_with($uri, $basePath)) {
+    Response::error('Endpoint non trovato', 'NOT_FOUND', 404);
+    exit;
+}
+
+$path = trim(substr($uri, strlen($basePath)), '/');
+$segments = $path === '' ? [] : explode('/', $path);
+$resource = $segments[0] ?? '';
+$resourceId = $segments[1] ?? null;
+
+$input = json_decode(file_get_contents('php://input'), true) ?? [];
+
+switch ($resource) {
+    case 'boards':
+        handleBoards($pdo, $method, $resourceId, $input);
+        break;
+    case 'lists':
+        handleLists($pdo, $method, $resourceId, $input);
+        break;
+@@ -158,50 +163,51 @@ function handleLists(PDO $pdo, string $method, ?string $id, array $input): void
+    }
+
+    if ($method === 'PUT' && $id !== null) {
+        $stmt = $pdo->prepare('UPDATE lists SET titolo = ?, posizione = ? WHERE id = ?');
+        $stmt->execute([
+            $input['titolo'] ?? null,
+            $input['posizione'] ?? 0,
+            $id,
+        ]);
+        Response::json(['updated' => $stmt->rowCount() > 0]);
+        return;
+    }
+
+    if ($method === 'DELETE' && $id !== null) {
+        $stmt = $pdo->prepare('DELETE FROM lists WHERE id = ?');
+        $stmt->execute([$id]);
+        Response::json(['deleted' => $stmt->rowCount() > 0]);
+        return;
+    }
+
+    Response::error('Metodo non supportato', 'METHOD_NOT_ALLOWED', 405);
+}
+
+function handleCards(PDO $pdo, string $method, ?string $id, array $input): void
+{
+    ensureCardsTableExists($pdo);
+    $hasAssigneeColumn = cardsHasAssigneeColumn($pdo);
+    
+    if ($method === 'GET' && $id === null) {
+        $listId = $_GET['list_id'] ?? null;
+        $selectFields = $hasAssigneeColumn
+            ? 'id, list_id, titolo, descrizione, assegnatario, posizione, created_at, updated_at'
+            : 'id, list_id, titolo, descrizione, NULL AS assegnatario, posizione, created_at, updated_at';
+        
+        if ($listId !== null) {
+            $stmt = $pdo->prepare("SELECT $selectFields FROM cards WHERE list_id = ? ORDER BY posizione ASC");
+            $stmt->execute([$listId]);
+        } else {
+            $stmt = $pdo->query("SELECT $selectFields FROM cards ORDER BY list_id ASC, posizione ASC");
+        }
+        Response::json($stmt->fetchAll());
+        return;
+    }
+
+    if ($method === 'GET' && $id !== null) {
+        $selectFields = $hasAssigneeColumn
+            ? 'id, list_id, titolo, descrizione, assegnatario, posizione, created_at, updated_at'
+            : 'id, list_id, titolo, descrizione, NULL AS assegnatario, posizione, created_at, updated_at';
+
+        $stmt = $pdo->prepare("SELECT $selectFields FROM cards WHERE id = ?");
+        $stmt->execute([$id]);
+@@ -258,60 +264,90 @@ function handleCards(PDO $pdo, string $method, ?string $id, array $input): void
+        } else {
+            $stmt = $pdo->prepare('UPDATE cards SET titolo = ?, descrizione = ?, list_id = ?, posizione = ? WHERE id = ?');
+            $stmt->execute([
+                $input['titolo'] ?? null,
+                $input['descrizione'] ?? null,
+                $input['list_id'] ?? null,
+                $input['posizione'] ?? 0,
+                $id,
+            ]);
+        }
+
+        Response::json(['updated' => $stmt->rowCount() > 0]);
+        return;
+    }
+
+    if ($method === 'DELETE' && $id !== null) {
+        $stmt = $pdo->prepare('DELETE FROM cards WHERE id = ?');
+        $stmt->execute([$id]);
+        Response::json(['deleted' => $stmt->rowCount() > 0]);
+        return;
+    }
+
+    Response::error('Metodo non supportato', 'METHOD_NOT_ALLOWED', 405);
+}
+
+function ensureCardsTableExists(PDO $pdo): void
+{
+    static $alreadyEnsured = false;
+
+    if ($alreadyEnsured) {
+        return;
+    }
+
+    $pdo->exec(
+        'CREATE TABLE IF NOT EXISTS cards (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            list_id INT NOT NULL,
+            titolo VARCHAR(160) NOT NULL,
+            descrizione TEXT NULL,
+            assegnatario VARCHAR(160) NULL,
+            posizione INT NOT NULL DEFAULT 0,
+            created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            CONSTRAINT fk_cards_list FOREIGN KEY (list_id) REFERENCES lists(id) ON DELETE CASCADE,
+            INDEX idx_cards_list_posizione (list_id, posizione)
+        ) ENGINE=InnoDB'
+    );
+
+    $alreadyEnsured = true;
+}
+
+
 function cardsHasAssigneeColumn(PDO $pdo): bool
 {
     static $cachedResult = null;
@@ -298,7 +460,6 @@ function cardsHasAssigneeColumn(PDO $pdo): bool
 
     return $cachedResult;
 }
-
 
 function handleMembers(PDO $pdo, string $method, ?string $id, array $input): void
 {
