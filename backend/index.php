@@ -366,7 +366,6 @@ switch ($resource) {
     }
 
     Response::error('Metodo non supportato', 'METHOD_NOT_ALLOWED', 405);
-}
 
 function ensureCardsTableExists(PDO $pdo): void
 {
