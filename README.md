@@ -50,6 +50,22 @@ curl -i http://localhost:8080/api/boards
 
 Se tutto è ok, la risposta deve avere status HTTP `200`.
 
+### Come clonare una repository privata (GitHub)
+Se la repository è privata, il proprietario/collaboratore deve autenticarsi prima del clone.
+
+Opzione consigliata su Windows (più semplice):
+1. Installa e apri **GitHub Desktop**.
+2. Fai login con l'account GitHub che ha accesso alla repo.
+3. Vai su **File -> Clone repository** e seleziona la repo privata.
+
+Opzione da terminale (HTTPS + token):
+```bash
+git clone https://github.com/<owner-o-org>/<repo>.git
+```
+Quando richiesto:
+- Username: username GitHub
+- Password: usa un **Personal Access Token (PAT)** (non la password GitHub)
+
 ### Inizializzazione DB e dati demo
 - Lo schema MySQL viene creato automaticamente al primo avvio di MySQL tramite `backend/db/init.sql` (montato in `/docker-entrypoint-initdb.d/init.sql`).
 - **Nota:** gli script in `/docker-entrypoint-initdb.d` vengono eseguiti solo quando il volume dati MySQL è nuovo (fresh DB volume).
