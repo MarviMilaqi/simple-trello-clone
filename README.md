@@ -52,6 +52,13 @@ Se tutto è ok, la risposta deve avere status HTTP `200`.
 
 ### Inizializzazione DB e dati demo
 - Lo schema MySQL viene creato automaticamente al primo avvio di MySQL tramite `backend/db/init.sql` (montato in `/docker-entrypoint-initdb.d/init.sql`).
+- **Nota:** gli script in `/docker-entrypoint-initdb.d` vengono eseguiti solo quando il volume dati MySQL è nuovo (fresh DB volume).
+- Per forzare una re-inizializzazione completa del DB:
+
+```bash
+docker compose down -v
+docker compose up --build
+```
 
 ### Stop dei container
 Per fermare lo stack:
