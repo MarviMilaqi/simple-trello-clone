@@ -66,6 +66,42 @@ Realizzare un clone semplificato di Trello: una bacheca Kanban collaborativa per
 - **View**: DOM + template statici HTML.
 - **Presenter**: logica UI + orchestrazione chiamate API.
 
+## Descrizione del processo di sviluppo (e UML annessi)
+Il processo di sviluppo è stato organizzato in iterazioni incrementali, mantenendo allineati analisi, progettazione e implementazione:
+
+1. **Analisi e requisiti (Fase 1)**
+   - Definizione di obiettivi, vincoli tecnologici e funzionalità minime.
+   - Identificazione delle entità di dominio (Board, Lista, Card, Membro).
+2. **Progettazione API e dati (Fase 2)**
+   - Definizione del contratto REST e dei payload JSON.
+   - Progettazione dello schema relazionale MySQL e delle relazioni tra entità.
+3. **Implementazione frontend/backend (Fase 3)**
+   - Frontend in MVP con presenter come orchestratore.
+   - Backend PHP con endpoint CRUD e persistenza su MySQL.
+4. **Validazione e rifinitura**
+   - Verifica della coerenza tra API, UI e persistenza.
+   - Aggiornamento della documentazione tecnica.
+
+Per supportare la progettazione e la comunicazione tra i componenti, sono allegati i seguenti diagrammi UML:
+- Diagramma delle classi: `docs/uml/class-diagram.svg`
+- Diagramma ER: `docs/uml/er-diagram.svg`
+- Sequence diagram creazione card: `docs/uml/sequence-create-card.svg`
+- Sequence diagram drag-and-drop: `docs/uml/sequence-dnd.svg`
+
+## Design pattern: Observer (Publisher/Subscriber)
+Oltre al pattern **MVP**, il progetto adotta anche il pattern **Observer** per la sincronizzazione tra stato applicativo e interfaccia:
+
+- Il **Model** agisce da publisher dello stato.
+- La **View** (direttamente o tramite Presenter) si registra come subscriber alle variazioni rilevanti.
+- Quando lo stato cambia (es. creazione/spostamento/aggiornamento di card), il Model notifica gli observer.
+- Gli observer aggiornano la rappresentazione UI senza accoppiare direttamente la logica di dominio al rendering.
+
+Questo approccio migliora:
+- la separazione delle responsabilità,
+- la manutenibilità del codice,
+- la reattività della UI ai cambiamenti di stato.
+
+
 ## Checklist fase 1 (completata)
 - [x] Requisiti e vincoli raccolti.
 - [x] Entità di dominio definite.
