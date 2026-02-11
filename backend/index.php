@@ -286,7 +286,6 @@ function handleCards(PDO $pdo, string $method, ?string $id, array $input): void
     Response::error('Metodo non supportato', 'METHOD_NOT_ALLOWED', 405);
 }
 
-<?php
 require_once __DIR__ . '/lib/Database.php';
 require_once __DIR__ . '/lib/Response.php';
 
@@ -358,60 +357,6 @@ switch ($resource) {
 
     if ($method === 'DELETE' && $id !== null) {
         $stmt = $pdo->prepare('DELETE FROM lists WHERE id = ?');
-        $stmt->execute([$id]);
-        Response::json(['deleted' => $stmt->rowCount() > 0]);
-        return;
-    }
-
-    Response::error('Metodo non supportato', 'METHOD_NOT_ALLOWED', 405);
-}
-
-function handleCards(PDO $pdo, string $method, ?string $id, array $input): void
-{
-    ensureCardsTableExists($pdo);
-    $hasAssigneeColumn = cardsHasAssigneeColumn($pdo);
-    
-    if ($method === 'GET' && $id === null) {
-        $listId = $_GET['list_id'] ?? null;
-        $selectFields = $hasAssigneeColumn
-            ? 'id, list_id, titolo, descrizione, assegnatario, posizione, created_at, updated_at'
-            : 'id, list_id, titolo, descrizione, NULL AS assegnatario, posizione, created_at, updated_at';
-        
-        if ($listId !== null) {
-            $stmt = $pdo->prepare("SELECT $selectFields FROM cards WHERE list_id = ? ORDER BY posizione ASC");
-            $stmt->execute([$listId]);
-        } else {
-            $stmt = $pdo->query("SELECT $selectFields FROM cards ORDER BY list_id ASC, posizione ASC");
-        }
-        Response::json($stmt->fetchAll());
-        return;
-    }
-
-    if ($method === 'GET' && $id !== null) {
-        $selectFields = $hasAssigneeColumn
-            ? 'id, list_id, titolo, descrizione, assegnatario, posizione, created_at, updated_at'
-            : 'id, list_id, titolo, descrizione, NULL AS assegnatario, posizione, created_at, updated_at';
-
-        $stmt = $pdo->prepare("SELECT $selectFields FROM cards WHERE id = ?");
-        $stmt->execute([$id]);
-@@ -258,60 +264,90 @@ function handleCards(PDO $pdo, string $method, ?string $id, array $input): void
-        } else {
-            $stmt = $pdo->prepare('UPDATE cards SET titolo = ?, descrizione = ?, list_id = ?, posizione = ? WHERE id = ?');
-            $stmt->execute([
-                $input['titolo'] ?? null,
-                $input['descrizione'] ?? null,
-                $input['list_id'] ?? null,
-                $input['posizione'] ?? 0,
-                $id,
-            ]);
-        }
-
-        Response::json(['updated' => $stmt->rowCount() > 0]);
-        return;
-    }
-
-    if ($method === 'DELETE' && $id !== null) {
-        $stmt = $pdo->prepare('DELETE FROM cards WHERE id = ?');
         $stmt->execute([$id]);
         Response::json(['deleted' => $stmt->rowCount() > 0]);
         return;
