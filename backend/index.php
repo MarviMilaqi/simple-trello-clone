@@ -20,8 +20,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-$database = new Database($config);
-$pdo = $database->getConnection();
+try {
+    $database = new Database($config);
+    $pdo = $database->getConnection();
+} catch (PDOException $exception) {
+    Response::error('Errore connessione database: verifica credenziali e stato del container MySQL.', 'DB_CONNECTION_ERROR', 500);
+    exit;
+}
 
 $method = $_SERVER['REQUEST_METHOD'];
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
