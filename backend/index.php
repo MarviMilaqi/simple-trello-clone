@@ -341,7 +341,10 @@ switch ($resource) {
     case 'lists':
         handleLists($pdo, $method, $resourceId, $input);
         break;
-@@ -158,50 +163,51 @@ function handleLists(PDO $pdo, string $method, ?string $id, array $input): void
+    
+    default:
+        http_response_code(404);
+        echo json_encode(["error" => "Resource not found"]);
     }
 
     if ($method === 'PUT' && $id !== null) {
