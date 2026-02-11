@@ -17,9 +17,6 @@ CREATE TABLE IF NOT EXISTS lists (
   INDEX idx_lists_board_posizione (board_id, posizione)
 ) ENGINE=InnoDB;
 
-ALTER TABLE cards
-  ADD COLUMN IF NOT EXISTS assegnatario VARCHAR(160) NULL AFTER descrizione;
-
 CREATE TABLE IF NOT EXISTS cards (
   id INT AUTO_INCREMENT PRIMARY KEY,
   list_id INT NOT NULL,
@@ -32,22 +29,6 @@ CREATE TABLE IF NOT EXISTS cards (
   CONSTRAINT fk_cards_list FOREIGN KEY (list_id) REFERENCES lists(id) ON DELETE CASCADE,
   INDEX idx_cards_list_posizione (list_id, posizione)
 ) ENGINE=InnoDB;
-
-SET @has_assegnatario := (
-  SELECT COUNT(*)
-  FROM information_schema.COLUMNS
-  WHERE TABLE_SCHEMA = DATABASE()
-    AND TABLE_NAME = 'cards'
-    AND COLUMN_NAME = 'assegnatario'
-);
-SET @alter_cards_sql := IF(
-  @has_assegnatario = 0,
-  'ALTER TABLE cards ADD COLUMN assegnatario VARCHAR(160) NULL AFTER descrizione',
-  'SELECT 1'
-);
-PREPARE alter_cards_stmt FROM @alter_cards_sql;
-EXECUTE alter_cards_stmt;
-DEALLOCATE PREPARE alter_cards_stmt;
 
 CREATE TABLE IF NOT EXISTS members (
   id INT AUTO_INCREMENT PRIMARY KEY,
