@@ -6,7 +6,7 @@ services:
     container_name: trello_db
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-trello_root_pass}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-trello_root_pass}
       MYSQL_DATABASE: ${MYSQL_DATABASE:-trello_clone}
     ports:
       - "${DB_PORT:-3306}:3306"
@@ -24,7 +24,7 @@ services:
       DB_HOST: ${DB_HOST:-db}
       DB_NAME: ${DB_NAME:-trello_clone}
       DB_USER: ${DB_USER:-root}
-      DB_PASS: ${DB_PASS:-trello_root_pass}
+      DB_PASS: ${DB_PASSWORD:-trello_root_pass}
       DB_CHARSET: ${DB_CHARSET:-utf8mb4}
     volumes:
       - ./:/var/www
